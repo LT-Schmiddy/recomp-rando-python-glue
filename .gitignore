@@ -1,0 +1,6 @@
+# Directories
+build/
+nrs_bin/
+
+# File Cxtensions
+*.exe

@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Lib",
+            "includePath": [
+                "${workspaceFolder}/include/",
+                "${workspaceFolder}/include/libc"
+            ],
+            "defines": [
+                "F3DEX_GBI_2",
+                "_LANGUAGE_C",
+                "MIPS"
+            ],
+            "compilerPath": "clang",
+            "cStandard": "c99"
+        }
+    ],
+    "version": 4
+}
