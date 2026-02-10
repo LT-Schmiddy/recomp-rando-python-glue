@@ -1,0 +1,12 @@
+[submodule "libs/Archipelago"]
+	path = libs/Archipelago
+	url = https://github.com/ArchipelagoMW/Archipelago
+[submodule "libs/websockets"]
+	path = libs/websockets
+	url = https://github.com/python-websockets/websockets
+[submodule "libs/pyyaml"]
+	path = libs/pyyaml
+	url = https://github.com/yaml/pyyaml
+[submodule "libs/schema"]
+	path = libs/schema
+	url = https://github.com/keleshev/schema
