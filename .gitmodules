@@ -10,3 +10,6 @@
 [submodule "libs/schema"]
 	path = libs/schema
 	url = https://github.com/keleshev/schema
+[submodule "libs/typing_extensions"]
+	path = libs/typing_extensions
+	url = https://github.com/python/typing_extensions
