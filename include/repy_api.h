@@ -73,7 +73,7 @@ typedef double REPY_f64;
  * to an object, and multiple handles can be mapped to a single Python object. Once created, a handle must be released
  * to remove that reference, either by using `REPY_Release` or flagging the handle as Single-Use (more on that below). 
  * If you need multiple references to a Python object, you can get a new handle to the same object using `REPY_CopyHandle`.
- * With the exception of `REPY_MakeSUH`, any REPY API function that returns a REPY_Handle will be creating a new handle. 
+ * With the exception of `REPY_MakeSUH`, `REPY_VL` and `REPY_VL_SUH`, any REPY API function that returns a REPY_Handle always creates a new handle. 
  * Failure to release handles will result in resource/memory leaks. 
  * 
  * The handle value of `REPY_NO_OBJECT` (the numerical value 0) is a special case, and represents the absense of any Python object. 
@@ -106,6 +106,10 @@ typedef unsigned int REPY_Handle;
  * A more readable alternative to simply entering 0.
  */
 #define REPY_NO_OBJECT 0
+
+
+typedef unsigned int REPY_InterpreterIndex;
+#define REPY_MAIN_INTERPRETER 0
 
 /**
  * @brief Used to set the type of code-string being compiled, in line with how Python's
@@ -506,8 +510,13 @@ REPY_FOREACH_CLEANUP_NOW(iter_identifier); return
  * 
  * The global and local scope `dict` objects will the same. Python's built-ins will be added
  * whenever Python code is first executed.
+ * 
+ * The Python interpreter to use is defined by the `interp_index` argument.
+ * 
+ * @param interp_index a valid interpreter index. Should be of the type `REPY_InterpreterIndex`.
  */
-#define REPY_FN_SETUP \
+#define REPY_FN_SETUP_INTERP(interp_index) \
+REPY_PushInterpreter(interp_index); \
 REPY_Handle REPY_FN_GLOBAL_SCOPE = REPY_CreateDict(0); \
 REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_FN_GLOBAL_SCOPE \
 
@@ -519,9 +528,13 @@ REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_FN_GLOBAL_SCOPE \
  * If the global scope `dict` doesn't have Python's builtins predefined, they will be added to the `dict` whenever
  * Python code is first executed.
  * 
+ * The Python interpreter to use is defined by the `interp_index` argument.
+ * 
+ * @param interp_index a valid interpreter index. Should be of the type `REPY_InterpreterIndex`.
  * @param globals The Python `dict` to use as a global scope.
  */
-#define REPY_FN_SETUP_WITH_GLOBALS(globals) \
+#define REPY_FN_SETUP_INTERP_WITH_GLOBALS(interp_index, globals) \
+REPY_PushInterpreter(interp_index); \
 REPY_Handle REPY_FN_GLOBAL_SCOPE = globals; \
 REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_CreateDict(0) \
 
@@ -535,11 +548,58 @@ REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_CreateDict(0) \
  * You should copy the `globals` handle with `REPY_CopyHandle` (or forgo cleaning up entirely) if you intend to use this
  * global scope dict elsewhere, since the clean up macros will release the scope `dict`.
  * 
+ * The Python interpreter to use is defined by the `interp_index` argument.
+ * 
+ * @param interp_index a valid interpreter index. Should be of the type `REPY_InterpreterIndex`.
+ * @param globals The Python `dict` to use as a global and local scope.
+ */
+#define REPY_FN_SETUP_INTERP_GLOBALS_ONLY(interp_index, globals) \
+REPY_PushInterpreter(interp_index); \
+REPY_Handle REPY_FN_GLOBAL_SCOPE = globals; \
+REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_FN_GLOBAL_SCOPE \
+
+/**
+ * @brief Create an inline execution scope for your function without any globals.
+ * 
+ * The global and local scope `dict` objects will the same. Python's built-ins will be added
+ * whenever Python code is first executed.
+ * 
+ * This execution scope will use the main Python interpreter.
+ */
+#define REPY_FN_SETUP \
+REPY_FN_SETUP_INTERP(REPY_MAIN_INTERPRETER)
+
+/**
+ * @brief Create an inline execution scope for your function, using a pre-defined Python
+ * `dict` as your global scope object, and creating a new Python `dict` for the local scope.
+ * Note that, unless otherwise specified, executing Python code stores variables on the local scope.
+ * 
+ * If the global scope `dict` doesn't have Python's builtins predefined, they will be added to the `dict` whenever
+ * Python code is first executed.
+ * 
+ * This execution scope will use the main Python interpreter.
+ * 
+ * @param globals The Python `dict` to use as a global scope.
+ */
+#define REPY_FN_SETUP_WITH_GLOBALS(globals) \
+REPY_FN_SETUP_INTERP_WITH_GLOBALS(REPY_MAIN_INTERPRETER) 
+
+/**
+ * @brief Create an inline execution scope for your function, using a pre-defined Python
+ * `dict` as your global scope and local scope. Useful for initializing globals to use across multiple functions.
+ * 
+ * If the global scope `dict` doesn't have Python's built-ins predefined, they will be added to the `dict` whenever
+ * Python code is first executed.
+ * 
+ * You should copy the `globals` handle with `REPY_CopyHandle` (or forgo cleaning up entirely) if you intend to use this
+ * global scope dict elsewhere, since the clean up macros will release the scope `dict`.
+ * 
+ * This execution scope will use the main Python interpreter.
+ * 
  * @param globals The Python `dict` to use as a global and local scope.
  */
 #define REPY_FN_SETUP_GLOBALS_ONLY(globals) \
-REPY_Handle REPY_FN_GLOBAL_SCOPE = globals; \
-REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_FN_GLOBAL_SCOPE; \
+REPY_FN_SETUP_INTERP_GLOBALS_ONLY(REPY_MAIN_INTERPRETER)
 
 /**
  * @brief Clean up a inline execution scope by releasing the local scope.
@@ -547,7 +607,8 @@ REPY_Handle REPY_FN_LOCAL_SCOPE = REPY_FN_GLOBAL_SCOPE; \
  * The global scope is only released if the global and local scopes are the same.
  */
 #define REPY_FN_CLEANUP \
-REPY_Release(REPY_FN_LOCAL_SCOPE)
+REPY_Release(REPY_FN_LOCAL_SCOPE); \
+REPY_PopInterpreter() \
 
 /**
  * @brief Clean up a inline scope by releasing the local scope, and return.
@@ -557,7 +618,9 @@ REPY_Release(REPY_FN_LOCAL_SCOPE)
  * The global scope is only released if the global and local scopes are the same.
  */
 #define REPY_FN_RETURN \
-REPY_Release(REPY_FN_LOCAL_SCOPE); return
+REPY_Release(REPY_FN_LOCAL_SCOPE); \
+REPY_PopInterpreter(); \
+return \
 
 
 /**
@@ -1682,7 +1745,7 @@ while (REPY_FN_EVAL_BOOL(bytecode_identifier))
  * using the variable name of `var_name`.
  * 
  * Much like `REPY_FOREACH`, A `REPY_IteratorHelper` object is created to manage the iteration process. The variable name for this helper
- * in the format of `bytecode_handle ## _iter). So if your `bytecode_handle` is `a`, the iterator will be called `a_iter`. In addition to
+ * in the format of `bytecode_handle ## _iter)`. So if your `bytecode_handle` is `a`, the iterator will be called `a_iter`. In addition to
  * being added to the scope, the current object of the loop can be accessed via `iter_identifier->curr`, and the index of that object 
  * can be accessed via `iter_identifier->index`. See the `REPY_IteratorHelper` documentation for more information.
  * 
@@ -1773,6 +1836,7 @@ for ( \
   */
 REPY_IMPORT(void REPY_PreInitAddToModuleSearchPath(const unsigned char* nrm_file_path));
 
+/** @}*/
 
 /** \defgroup repy_handle_funcs Handle Functions
  * \brief Functions that operate on `REPY_Handle` values directly, rather than the Python objects they represent.
@@ -1856,11 +1920,27 @@ REPY_IMPORT(void REPY_SetSUH(REPY_Handle py_handle_no_release, REPY_bool value))
  */
 REPY_IMPORT(REPY_Handle REPY_CopyHandle(REPY_Handle py_handle));
 
+/** @}*/
+
+/** \defgroup repy_interpreter_funcs Module Functions
+ * \brief Functions Used for Python interpreter/subinterpreter operations.
+ *  @{
+ */
+
+REPY_IMPORT(REPY_InterpreterIndex REPY_RegisterSubinterpreter());
+REPY_IMPORT(void REPY_PushInterpreter(REPY_InterpreterIndex interpreter_handle));
+REPY_IMPORT(void REPY_PopInterpreter());
+REPY_IMPORT(REPY_InterpreterIndex REPY_GetCurrentInterpreter());
+REPY_IMPORT(REPY_InterpreterIndex REPY_GetHandleInterpreter(REPY_Handle handle));
+
+/** @}*/
 
 /** \defgroup repy_handle_funcs Module Functions
  * \brief Functions Used for Python module operations.
  *  @{
  */
+
+REPY_IMPORT(void REPY_AddCStrToSysPath(const char* filepath));
 
 /**
  * @brief Construct a new Python module from a NULL-terminated code string, importable by name.
@@ -1897,6 +1977,7 @@ REPY_IMPORT(void REPY_ConstructModuleFromCStrN(const char* identifier, const cha
  * @param identifier The name of the Python module. Should be NULL-terminated.
  */
 REPY_IMPORT(REPY_Handle REPY_ImportModule(const char* identifier));
+
 /** @}*/
 
 /** \defgroup repy_primative_funcs Primative Operations
@@ -3019,6 +3100,9 @@ REPY_IMPORT(REPY_Handle REPY_EvalCStr(const char* code, REPY_Handle global_scope
  * @return A handle for the resulting object. Will be `REPY_NO_HANDLE` if an error occured.
  */
 REPY_IMPORT(REPY_Handle REPY_EvalCStrN(const char* code, REPY_u32 len, REPY_Handle global_scope_nullable, REPY_Handle local_scope_nullable));
+
+REPY_IMPORT(REPY_Handle REPY_VL(REPY_Handle dict_no_release, u32 size, ...));
+REPY_IMPORT(REPY_Handle REPY_VL_SUH(REPY_Handle dict_no_release, u32 size, ...));
 
 /** @}*/
 
