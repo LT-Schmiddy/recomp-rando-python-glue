@@ -4,3 +4,4 @@ nrs_bin/
 
 # File Cxtensions
 *.exe
+*.pyc

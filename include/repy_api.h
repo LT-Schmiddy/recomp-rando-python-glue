@@ -3121,8 +3121,8 @@ REPY_IMPORT(REPY_Handle REPY_EvalCStr(const char* code, REPY_Handle global_scope
  */
 REPY_IMPORT(REPY_Handle REPY_EvalCStrN(const char* code, REPY_u32 len, REPY_Handle global_scope_nullable, REPY_Handle local_scope_nullable));
 
-REPY_IMPORT(REPY_Handle REPY_VL(REPY_Handle dict_no_release, u32 size, ...));
-REPY_IMPORT(REPY_Handle REPY_VL_SUH(REPY_Handle dict_no_release, u32 size, ...));
+REPY_IMPORT(REPY_Handle REPY_VL(REPY_Handle dict_no_release, REPY_u32 size, ...));
+REPY_IMPORT(REPY_Handle REPY_VL_SUH(REPY_Handle dict_no_release, REPY_u32 size, ...));
 
 /** @}*/
 
