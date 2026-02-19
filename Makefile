@@ -1,4 +1,4 @@
-BUILD_DIR := build
+BUILD_DIR := build/lib
 CC      ?= clang
 AR      ?= llvm-ar
 
