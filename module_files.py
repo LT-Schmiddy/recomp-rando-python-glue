@@ -7,35 +7,37 @@ typing_extensions_src_dir = root_dir.joinpath("./libs/typing_extensions/src")
 websockets_src_dir = root_dir.joinpath("./libs/websockets/src/websockets")
 archipelago_src_dir = root_dir.joinpath("./libs/Archipelago")
 
+nrm_archipelago_dir = Path("archipelago")
+
 include_python_files: dict[Path, Path] = {
     # Including single files
     # Modules
     Path("schema.py"): root_dir.joinpath("./libs/schema/schema.py"),
 
     # Archipelago Base Files
-    Path("BaseClasses.py"): archipelago_src_dir.joinpath("./BaseClasses.py"),
-    Path("Generate.py"): archipelago_src_dir.joinpath("./Generate.py"),
-    Path("Fill.py"): archipelago_src_dir.joinpath("./Fill.py"),
-    Path("Main.py"): archipelago_src_dir.joinpath("./Main.py"),
+    nrm_archipelago_dir.joinpath("BaseClasses.py"): archipelago_src_dir.joinpath("./BaseClasses.py"),
+    nrm_archipelago_dir.joinpath("Generate.py"): archipelago_src_dir.joinpath("./Generate.py"),
+    nrm_archipelago_dir.joinpath("Fill.py"): archipelago_src_dir.joinpath("./Fill.py"),
+    nrm_archipelago_dir.joinpath("Main.py"): archipelago_src_dir.joinpath("./Main.py"),
     # Path("ModuleUpdate.py"): root_dir.joinpath("./src/python/ModuleUpdate.py"), # dummy `ModuleUpdate.py`
-    Path("MultiServer.py"): archipelago_src_dir.joinpath("./MultiServer.py"),
-    Path("NetUtils.py"): archipelago_src_dir.joinpath("./NetUtils.py"),
-    Path("Options.py"): archipelago_src_dir.joinpath("./Options.py"),
-    Path("Utils.py"): archipelago_src_dir.joinpath("./Utils.py"),
-    Path("settings.py"): archipelago_src_dir.joinpath("./settings.py"),
-    Path("requirements.txt"): archipelago_src_dir.joinpath("./requirements.txt"), # ?
+    nrm_archipelago_dir.joinpath("MultiServer.py"): archipelago_src_dir.joinpath("./MultiServer.py"),
+    nrm_archipelago_dir.joinpath("NetUtils.py"): archipelago_src_dir.joinpath("./NetUtils.py"),
+    nrm_archipelago_dir.joinpath("Options.py"): archipelago_src_dir.joinpath("./Options.py"),
+    nrm_archipelago_dir.joinpath("Utils.py"): archipelago_src_dir.joinpath("./Utils.py"),
+    nrm_archipelago_dir.joinpath("settings.py"): archipelago_src_dir.joinpath("./settings.py"),
+    nrm_archipelago_dir.joinpath("requirements.txt"): archipelago_src_dir.joinpath("./requirements.txt"), # ?
     # Path("CustomGenerate.py"): root_dir.joinpath("./src/python/CustomGenerate.py"), # a custom `Generate.py` for custom json output
 
     # Archipelago World Files
-    Path("worlds/__init__.py"): archipelago_src_dir.joinpath("./worlds/__init__.py"),
+    nrm_archipelago_dir.joinpath("worlds/__init__.py"): archipelago_src_dir.joinpath("./worlds/__init__.py"),
     # Path("worlds/__init__.py"): root_dir.joinpath("./src/python/worlds_init.py"), # a custom `__init__.py` meant to add loading zip archives
-    Path("worlds/AutoSNIClient.py"): archipelago_src_dir.joinpath("./worlds/AutoSNIClient.py"),
-    Path("worlds/AutoWorld.py"): archipelago_src_dir.joinpath("./worlds/AutoWorld.py"),
-    Path("worlds/Files.py"): archipelago_src_dir.joinpath("./worlds/Files.py"),
-    Path("worlds/LauncherComponents.py"): archipelago_src_dir.joinpath("./worlds/LauncherComponents.py"),
-    Path("worlds/alttp/EntranceRandomizer.py"): archipelago_src_dir.joinpath("./worlds/alttp/EntranceRandomizer.py"),
-    Path("worlds/alttp/Text.py"): archipelago_src_dir.joinpath("./worlds/alttp/Text.py"),
-    Path("worlds/alttp/__init__.py"): archipelago_src_dir.joinpath("./worlds/alttp/__init__.py"),
+    nrm_archipelago_dir.joinpath("worlds/AutoSNIClient.py"): archipelago_src_dir.joinpath("./worlds/AutoSNIClient.py"),
+    nrm_archipelago_dir.joinpath("worlds/AutoWorld.py"): archipelago_src_dir.joinpath("./worlds/AutoWorld.py"),
+    nrm_archipelago_dir.joinpath("worlds/Files.py"): archipelago_src_dir.joinpath("./worlds/Files.py"),
+    nrm_archipelago_dir.joinpath("worlds/LauncherComponents.py"): archipelago_src_dir.joinpath("./worlds/LauncherComponents.py"),
+    nrm_archipelago_dir.joinpath("worlds/alttp/EntranceRandomizer.py"): archipelago_src_dir.joinpath("./worlds/alttp/EntranceRandomizer.py"),
+    nrm_archipelago_dir.joinpath("worlds/alttp/Text.py"): archipelago_src_dir.joinpath("./worlds/alttp/Text.py"),
+    nrm_archipelago_dir.joinpath("worlds/alttp/__init__.py"): archipelago_src_dir.joinpath("./worlds/alttp/__init__.py"),
     # Path("worlds/__init__.py"): root_dir.joinpath("./src/python/worlds_init.py"), # dummy `__init__.py`
 }
 
