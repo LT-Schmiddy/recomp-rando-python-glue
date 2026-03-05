@@ -6,6 +6,7 @@ pyyaml_src_dir = root_dir.joinpath("./libs/pyyaml/lib/yaml")
 typing_extensions_src_dir = root_dir.joinpath("./libs/typing_extensions/src")
 websockets_src_dir = root_dir.joinpath("./libs/websockets/src/websockets")
 archipelago_src_dir = root_dir.joinpath("./libs/Archipelago")
+local_src_dir = root_dir.joinpath("./src/python")
 
 nrm_archipelago_dir = Path("archipelago")
 
@@ -27,6 +28,10 @@ include_python_files: dict[Path, Path] = {
     nrm_archipelago_dir.joinpath("settings.py"): archipelago_src_dir.joinpath("./settings.py"),
     nrm_archipelago_dir.joinpath("requirements.txt"): archipelago_src_dir.joinpath("./requirements.txt"), # ?
     # Path("CustomGenerate.py"): root_dir.joinpath("./src/python/CustomGenerate.py"), # a custom `Generate.py` for custom json output
+
+    # Archipelago Client Files
+    nrm_archipelago_dir.joinpath("CommonClient.py"): archipelago_src_dir.joinpath("./CommonClient.py"),
+    nrm_archipelago_dir.joinpath("RecompClient.py"): local_src_dir.joinpath("./RecompClient.py"), # a custom `Client` that will be the main interface to Archipelago
 
     # Archipelago World Files
     nrm_archipelago_dir.joinpath("worlds/__init__.py"): archipelago_src_dir.joinpath("./worlds/__init__.py"),
