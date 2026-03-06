@@ -5,12 +5,13 @@ REPY_Handle rando_globals = 0;
 
 void RandoGlue_Init() { 
     rando_interp = REPY_RegisterSubinterpreter(); 
+    
+    REPY_PushInterpreter(rando_interp);
     rando_globals = REPY_CreateDict(0);
+    REPY_PopInterpreter();
 
-    recomp_printf("Subinterpreter %s Initialized\n", "rando_interp"); 
-    recomp_printf("THIS SHOULD PRINT\n"); 
+    recomp_printf("Subinterpreter %s Initialized\n", "rando_interp");
 
-    // REPY_PushInterpreter(rando_interp); 
     // REPY_FN_SETUP_INTERP(rando_interp);
     REPY_FN_SETUP_RANDO;
 
@@ -22,6 +23,5 @@ void RandoGlue_Init() {
     );
     
     REPY_AddNrmToSysPath(); 
-    // REPY_PopInterpreter(); 
     REPY_FN_CLEANUP;
 }
