@@ -32,6 +32,8 @@ include_python_files: dict[Path, Path] = {
     # Archipelago Client Files
     nrm_archipelago_dir.joinpath("CommonClient.py"): archipelago_src_dir.joinpath("./CommonClient.py"),
     nrm_archipelago_dir.joinpath("RecompClient.py"): local_src_dir.joinpath("./RecompClient.py"), # a custom `Client` that will be the main interface to Archipelago
+    Path("test.py"): local_src_dir.joinpath("./test.py"), # for testing purposes
+    # Path("RecompClient.py"): local_src_dir.joinpath("./RecompClient.py"), # a custom `Client` that will be the main interface to Archipelago
 
     # Archipelago World Files
     nrm_archipelago_dir.joinpath("worlds/__init__.py"): archipelago_src_dir.joinpath("./worlds/__init__.py"),
