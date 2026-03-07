@@ -8,6 +8,7 @@ void RandoGlue_Init() {
     
     REPY_PushInterpreter(rando_interp);
     rando_globals = REPY_CreateDict(0);
+    REPY_AddNrmToSysPath();
     REPY_PopInterpreter();
 
     recomp_printf("Subinterpreter %s Initialized\n", "rando_interp");
@@ -22,6 +23,5 @@ void RandoGlue_Init() {
         "print(f'This is example Python code running on {platform.system()}')"
     );
     
-    REPY_AddNrmToSysPath(); 
     REPY_FN_CLEANUP;
 }

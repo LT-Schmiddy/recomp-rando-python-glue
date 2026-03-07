@@ -40,6 +40,8 @@ include_python_files: dict[Path, Path] = {
     nrm_archipelago_dir.joinpath("worlds/AutoWorld.py"): archipelago_src_dir.joinpath("./worlds/AutoWorld.py"),
     nrm_archipelago_dir.joinpath("worlds/Files.py"): archipelago_src_dir.joinpath("./worlds/Files.py"),
     nrm_archipelago_dir.joinpath("worlds/LauncherComponents.py"): archipelago_src_dir.joinpath("./worlds/LauncherComponents.py"),
+    nrm_archipelago_dir.joinpath("worlds/generic/__init__.py"): archipelago_src_dir.joinpath("./worlds/generic/__init__.py"),
+    nrm_archipelago_dir.joinpath("worlds/generic/Rules.py"): archipelago_src_dir.joinpath("./worlds/generic/Rules.py"),
     nrm_archipelago_dir.joinpath("worlds/alttp/EntranceRandomizer.py"): archipelago_src_dir.joinpath("./worlds/alttp/EntranceRandomizer.py"),
     nrm_archipelago_dir.joinpath("worlds/alttp/Text.py"): archipelago_src_dir.joinpath("./worlds/alttp/Text.py"),
     nrm_archipelago_dir.joinpath("worlds/alttp/__init__.py"): archipelago_src_dir.joinpath("./worlds/alttp/__init__.py"),
@@ -57,5 +59,3 @@ def populate_file_injection(injections: dict[Path, Path], inject_root: Path, sea
 populate_file_injection(include_python_files, Path("yaml"), pyyaml_src_dir)
 populate_file_injection(include_python_files, Path("typing_extensions"), typing_extensions_src_dir)
 populate_file_injection(include_python_files, Path("websockets"), websockets_src_dir)
-
-populate_file_injection(include_python_files, Path("worlds/generic"), archipelago_src_dir.joinpath("./worlds/generic"))
