@@ -20,7 +20,9 @@ void RandoGlue_Init() {
         example1, 
         "from rando_test import test_func\n"
         "test_func()\n"
-        "from CommonClient import run_as_textclient\n"
+        // "from CommonClient import run_as_textclient\n"
+        "from RecompClient import run_as_textclient\n"
+        "run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
     );
     
     REPY_FN_CLEANUP;

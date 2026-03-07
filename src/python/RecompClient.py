@@ -8,7 +8,7 @@ from copy import deepcopy
 from typing import List, Any, Iterable
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
 from MultiServer import Endpoint
-from CommonClient import CommonContext, ClientCommandProcessor, logger
+from CommonClient import CommonContext, ClientCommandProcessor, logger, server_loop, get_base_parser, handle_url_arg
 
 class RecompContext(CommonContext):
 	game = "Recomp Rando Glue" # TODO: allow for this to be changed (used for auth/knowing what game you're reading from?)
@@ -42,64 +42,50 @@ class RecompContext(CommonContext):
 	# def on_package(self, cmd: str, args: dict):
 	# 	pass
 
-	# TODO: move ALL of this into individual recomp functions
+# temp, easier to modify if needed
+def run_as_textclient(*args):
+	class TextContext(CommonContext):
+		# Text Mode to use !hint and such with games that have no text entry
+		tags = CommonContext.tags | {"TextOnly"}
+		game = ""  # empty matches any game since 0.3.2
+		items_handling = 0b111  # receive all items for /received
+		want_slot_data = False  # Can't use game specific slot_data
 
-	# location info
-	def rando_location_is_checked(self, location_id: int):
-		return location_id in self.locations_checked
-		# return location_id in self.checked_locations # checked_locations is serverside checked while locations_checked in client
-	
-	def rando_get_location_type(self, location_id: int):
-		return self.locations_info[location_id].flags
-	
-	def rando_get_location_has_local_item(self, location_id: int):
-		return self.locations_info[location_id].player == self.slot
-	
-	def rando_get_item_at_location(self, location_id: int):
-		return self.locations_info[location_id].item
-	
-	def rando_location_exists(self, location_id: int):
-		return location_id in self.server_locations
+		async def server_auth(self, password_requested: bool = False):
+			if password_requested and not self.password:
+				await super(TextContext, self).server_auth(password_requested)
+			await self.get_username()
+			await self.send_connect(game="")
 
-	async def rando_send_location(self, location_id: int):
-		# would it be better to add locations to a list that are sent out in the update loop?
-		self.check_locations([int]) # typing.Collection[int]
-	
-	# item info
-	def rando_has_item(self, item_id: int):
-		for item in self.items_received:
-			if item_id == item.item:
-				return True
-		return False
-	
-	def rando_get_item_location(self, item_id: int): # ???
-		for item in self.items_received:
-			if item_id == item.item:
-				return item.location
-		return 0
-	
-	# deathlink info
-	def rando_get_death_link_pending(self):
-		return self.deathlink_pending
-	
-	def rando_reset_death_link_pending(self):
-		self.deathlink_pending = False
-	
-	def rando_get_death_link_enabled(self):
-		return "DeathLink" in self.tags
-	
-	def rando_update_deathlink_state(self, state: bool): # new function
-		self.update_death_link(state)
-	
-	def rando_send_death_link(self):
-		self.send_death() # add option for custom text?
-		self.rando_reset_death_link_pending()
+		def on_package(self, cmd: str, args: dict):
+			if cmd == "Connected":
+				self.game = self.slot_info[self.slot].game
 
-	def on_deathlink(self, data: typing.Dict[str, typing.Any]) -> None:
-		self.deathlink_pending = True
-		super().on_deathlink # TODO: handle this more thoughroughly (custom deathlink messages?)
+		async def disconnect(self, allow_autoreconnect: bool = False):
+			self.game = ""
+			await super().disconnect(allow_autoreconnect)
 
-	# Goal
-	async def rando_complete_goal(self):
-		self.finished_game = True
-		await self.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}]) # probably
+	async def main(args):
+		ctx = TextContext(args.connect, args.password)
+		ctx.auth = args.name
+		ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
+
+		ctx.run_cli() # force cli output
+
+		await ctx.exit_event.wait()
+		await ctx.shutdown()
+
+	import colorama
+
+	parser = get_base_parser(description="Gameless Archipelago Client, for text interfacing.")
+	parser.add_argument('--name', default=None, help="Slot Name to connect as.")
+	parser.add_argument("url", nargs="?", help="Archipelago connection url")
+	args = parser.parse_args(args)
+
+	args = handle_url_arg(args, parser=parser)
+
+	# use colorama to display colored text highlighting on windows
+	colorama.just_fix_windows_console()
+
+	asyncio.run(main(args))
+	colorama.deinit()
