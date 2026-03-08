@@ -5,7 +5,7 @@ REPY_Handle rando_globals = 0;
 
 void RandoGlue_Init() { 
     rando_interp = REPY_RegisterSubinterpreter(); 
-    
+    REPY_SetInterpreterAutoDisarm(rando_interp, 1); // A hack fix until we have a proper shutdown event.
     REPY_PushInterpreter(rando_interp);
     REPY_AddNrmToSysPath();
     rando_globals = REPY_CreateDict(0);
