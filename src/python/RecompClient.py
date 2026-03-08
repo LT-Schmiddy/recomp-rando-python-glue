@@ -4,15 +4,14 @@ import time
 import Utils
 import websockets
 import functools
+import typing
 from copy import deepcopy
-from typing import List, Any, Iterable
+# from typing import List, Any, Iterable
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
 from MultiServer import Endpoint
 from CommonClient import CommonContext, ClientCommandProcessor, logger, server_loop, get_base_parser, handle_url_arg
 
 from rando_async_controller import AsyncLoopThread
-
-
 
 class RecompContext(CommonContext):
     game = "Recomp Rando Glue" # TODO: allow for this to be changed (used for auth/knowing what game you're reading from?)
@@ -46,6 +45,29 @@ class RecompContext(CommonContext):
     # def on_package(self, cmd: str, args: dict):
     # 	pass
 
+# ignore all caching lmao
+def get_unique_identifier():
+    # common_path = cache_path("common.json")
+    # try:
+    #     with open(common_path) as f:
+    #         common_file = json.load(f)
+    #         uuid = common_file.get("uuid", None)
+    # except FileNotFoundError:
+    #     common_file = {}
+    #     uuid = None
+
+    # if uuid:
+    #     return uuid
+
+    from uuid import uuid4
+    uuid = str(uuid4())
+    # common_file["uuid"] = uuid
+
+    # cache_folder = os.path.dirname(common_path)
+    # os.makedirs(cache_folder, exist_ok=True)
+    # with open(common_path, "w") as f:
+    #     json.dump(common_file, f, separators=(",", ":"))
+    return uuid
 
 class TextContext(CommonContext):
     # Text Mode to use !hint and such with games that have no text entry
@@ -67,6 +89,60 @@ class TextContext(CommonContext):
     async def disconnect(self, allow_autoreconnect: bool = False):
         self.game = ""
         await super().disconnect(allow_autoreconnect)
+        
+    # currently causes issues due to "load_data_package_for_checksum"'s use of "platformdirs"
+    async def prepare_data_package(self, relevant_games: typing.Set[str],
+                                   remote_data_package_checksums: typing.Dict[str, str]):
+        return
+        # """Validate that all data is present for the current multiworld.
+        # Download, assimilate and cache missing data from the server."""
+        # # by documentation any game can use Archipelago locations/items -> always relevant
+        # relevant_games.add("Archipelago")
+
+        # needed_updates: typing.Set[str] = set()
+        # for game in relevant_games:
+        #     if game not in remote_data_package_checksums:
+        #         continue
+
+        #     remote_checksum: typing.Optional[str] = remote_data_package_checksums.get(game)
+
+        #     if not remote_checksum:  # custom data package and no checksum for this game
+        #         needed_updates.add(game)
+        #         continue
+            
+            # cached_checksum: typing.Optional[str] = self.checksums.get(game)
+            # no action required if cached version is new enough
+            # if remote_checksum != cached_checksum:
+            #     local_checksum: typing.Optional[str] = network_data_package["games"].get(game, {}).get("checksum")
+            #     if remote_checksum == local_checksum:
+            #         self.update_game(network_data_package["games"][game], game)
+                # else:
+                #     cached_game = Utils.load_data_package_for_checksum(game, remote_checksum)
+                #     cache_checksum: typing.Optional[str] = cached_game.get("checksum")
+                #     # download remote version if cache is not new enough
+                #     if remote_checksum != cache_checksum:
+                #         needed_updates.add(game)
+                #     else:
+                #         self.update_game(cached_game, game)
+        # if needed_updates:
+        #     await self.send_msgs([{"cmd": "GetDataPackage", "games": [game_name]} for game_name in needed_updates])
+    
+    # get_unique_identifier is modified to not utilize caching/looking at local files using "platformdirs"
+    async def send_connect(self, **kwargs: typing.Any) -> None:
+        """
+        Send a `Connect` packet to log in to the server,
+        additional keyword args can override any value in the connection packet
+        """
+        payload = {
+            'cmd': 'Connect',
+            'password': self.password, 'name': self.auth, 'version': Utils.version_tuple,
+            'tags': self.tags, 'items_handling': self.items_handling,
+            'uuid': get_unique_identifier(), 'game': self.game, "slot_data": self.want_slot_data,
+        }
+        if kwargs:
+            payload.update(kwargs)
+        await self.send_msgs([payload])
+        await self.send_msgs([{"cmd": "Get", "keys": ["_read_race_mode"]}])
 
 async def async_main(args):
     ctx = TextContext(args.connect, args.password)
