@@ -131,50 +131,63 @@ def local_path(*path: str) -> str:
     """
     if hasattr(local_path, 'cached_path'):
         pass
-    elif is_frozen():
-        if hasattr(sys, "_MEIPASS"):
-            # we are running in a PyInstaller bundle
-            local_path.cached_path = sys._MEIPASS  # pylint: disable=protected-access,no-member
-        else:
-            # cx_Freeze
-            local_path.cached_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-    else:
-        import __main__
-        if globals().get("__file__") and os.path.isfile(__file__):
-            # we are running in a normal Python environment
-            local_path.cached_path = os.path.dirname(os.path.abspath(__file__))
-        elif hasattr(__main__, "__file__") and os.path.isfile(__main__.__file__):
-            # we are running in a normal Python environment, but AP was imported weirdly
-            local_path.cached_path = os.path.dirname(os.path.abspath(__main__.__file__))
-        else:
-            # pray
-            local_path.cached_path = os.path.abspath(".")
+    # elif is_frozen():
+    #     if hasattr(sys, "_MEIPASS"):
+    #         # we are running in a PyInstaller bundle
+    #         local_path.cached_path = sys._MEIPASS  # pylint: disable=protected-access,no-member
+    #     else:
+    #         # cx_Freeze
+    #         local_path.cached_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+    # else:
+    #     import __main__
+    #     if globals().get("__file__") and os.path.isfile(__file__):
+    #         # we are running in a normal Python environment
+    #         local_path.cached_path = os.path.dirname(os.path.abspath(__file__))
+    #     elif hasattr(__main__, "__file__") and os.path.isfile(__main__.__file__):
+    #         # we are running in a normal Python environment, but AP was imported weirdly
+    #         local_path.cached_path = os.path.dirname(os.path.abspath(__main__.__file__))
+    #     else:
+    #         # pray
+    #         local_path.cached_path = os.path.abspath(".")
 
+    # return os.path.join(local_path.cached_path, *path)
+    
+    if not hasattr(local_path, 'cached_path'):
+        import recomp_data
+        from pathlib import Path
+        local_path.cached_path = str(recomp_data.recomp_mod_data_path.joinpath("Archipelago", "local"))
+    
     return os.path.join(local_path.cached_path, *path)
 
 
 def home_path(*path: str) -> str:
     """Returns path to a file in the user home's Archipelago directory."""
-    if hasattr(home_path, 'cached_path'):
-        pass
-    elif sys.platform.startswith('linux'):
-        xdg_data_home = os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
-        home_path.cached_path = xdg_data_home + '/Archipelago'
-        if not os.path.isdir(home_path.cached_path):
-            legacy_home_path = os.path.expanduser('~/Archipelago')
-            if os.path.isdir(legacy_home_path):
-                os.renames(legacy_home_path, home_path.cached_path)
-                os.symlink(home_path.cached_path, legacy_home_path)
-            else:
-                os.makedirs(home_path.cached_path, 0o700, exist_ok=True)
-    elif sys.platform == 'darwin':
-        import platformdirs
-        home_path.cached_path = platformdirs.user_data_dir("Archipelago", False)
-        os.makedirs(home_path.cached_path, 0o700, exist_ok=True)
-    else:
-        # not implemented
-        home_path.cached_path = local_path()  # this will generate the same exceptions we got previously
+    # if hasattr(home_path, 'cached_path'):
+    #     pass
+    # elif sys.platform.startswith('linux'):
+    #     xdg_data_home = os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share'))
+    #     home_path.cached_path = xdg_data_home + '/Archipelago'
+    #     if not os.path.isdir(home_path.cached_path):
+    #         legacy_home_path = os.path.expanduser('~/Archipelago')
+    #         if os.path.isdir(legacy_home_path):
+    #             os.renames(legacy_home_path, home_path.cached_path)
+    #             os.symlink(home_path.cached_path, legacy_home_path)
+    #         else:
+    #             os.makedirs(home_path.cached_path, 0o700, exist_ok=True)
+    # elif sys.platform == 'darwin':
+    #     import platformdirs
+    #     home_path.cached_path = platformdirs.user_data_dir("Archipelago", False)
+    #     os.makedirs(home_path.cached_path, 0o700, exist_ok=True)
+    # else:
+    #     # not implemented
+    #     home_path.cached_path = local_path()  # this will generate the same exceptions we got previously
 
+    # return os.path.join(home_path.cached_path, *path)
+    if not hasattr(home_path, 'cached_path'):
+        import recomp_data
+        from pathlib import Path
+        home_path.cached_path = str(recomp_data.recomp_mod_data_path.joinpath("Archipelago", "home"))
+    
     return os.path.join(home_path.cached_path, *path)
 
 
@@ -209,8 +222,11 @@ def cache_path(*path: str) -> str:
     if hasattr(cache_path, "cached_path"):
         pass
     else:
-        import platformdirs
-        cache_path.cached_path = platformdirs.user_cache_dir("Archipelago", False)
+        # import platformdirs
+        # cache_path.cached_path = platformdirs.user_cache_dir("Archipelago", False)
+        import recomp_data
+        from pathlib import Path
+        cache_path.cached_path = str(recomp_data.recomp_mod_data_path.joinpath("Archipelago", "cached_path"))
 
     return os.path.join(cache_path.cached_path, *path)
 
