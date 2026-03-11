@@ -25,14 +25,13 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
     
     // setup the `mod_data` path variable
-    REPY_FN_SET_STR("mods_folder", recomp_get_mod_folder_path());
+    REPY_FN_SET_STR("mods_folder", (char*) recomp_get_mod_folder_path());
     REPY_FN_SET_STR("recomp_mod_id", mod_id);
 
     REPY_FN_EXEC_CACHE( // maybe move this to a separate python file?
         rando_setup_filepath,
         "from pathlib import Path\n"
         "mod_data_path = Path(mods_folder).joinpath('..', 'mod_data', recomp_mod_id).resolve()\n"
-        // "mod_data_path = Path(mods_folder + f'/../mod_data/{recomp_mod_id}').resolve()\n"
         "mod_data_path.mkdir(parents=True, exist_ok=True)\n"
         "mod_data_path.joinpath('Archipelago', 'local', 'Players').mkdir(parents=True, exist_ok=True)\n" // need to make directories beforehand
         "print(mod_data_path)"
@@ -49,7 +48,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "from RecompClient import run_as_textclient\n"
         "import logging\n"
         "logging.getLogger().setLevel(logging.INFO)\n"
-        "logging.basicConfig()\n"
+        "logging.basicConfig(format='AP: %(message)s')\n"
         "run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
     );
     

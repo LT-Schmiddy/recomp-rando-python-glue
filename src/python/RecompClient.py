@@ -5,11 +5,14 @@ import Utils
 import websockets
 import functools
 import typing
-from copy import deepcopy
+# from copy import deepcopy
 # from typing import List, Any, Iterable
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
 from MultiServer import Endpoint
 from CommonClient import CommonContext, ClientCommandProcessor, logger, server_loop, get_base_parser, handle_url_arg
+
+import logging
+import copy
 
 from rando_async_controller import AsyncLoopThread
 
@@ -65,6 +68,16 @@ class TextContext(CommonContext):
     async def disconnect(self, allow_autoreconnect: bool = False):
         self.game = ""
         await super().disconnect(allow_autoreconnect)
+
+    def on_print_json(self, args: dict):
+        # if self.ui:
+        #     # send copy to UI
+        #     self.ui.print_json(copy.deepcopy(args["data"]))
+
+        # logging.getLogger("FileLog").info(self.rawjsontotextparser(copy.deepcopy(args["data"])),
+        #                                   extra={"NoStream": True})
+        logging.getLogger("StreamLog").info(self.jsontotextparser(copy.deepcopy(args["data"])),
+                                            extra={"NoFile": True})
 
 async def async_main(args):
     ctx = TextContext(args.connect, args.password)
