@@ -47,6 +47,9 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         // "test_func()\n"
         // "from CommonClient import run_as_textclient\n"
         "from RecompClient import run_as_textclient\n"
+        "import logging\n"
+        "logging.getLogger().setLevel(logging.INFO)\n"
+        "logging.basicConfig()\n"
         "run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
     );
     
