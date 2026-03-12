@@ -50,27 +50,6 @@ class RecompContext(CommonContext):
         if cmd == 'Connected':
             self.slot_data = args.get("slot_data", {})
 
-class TextContext(CommonContext):
-    # Text Mode to use !hint and such with games that have no text entry
-    tags = CommonContext.tags | {"TextOnly"}
-    game = ""  # empty matches any game since 0.3.2
-    items_handling = 0b111  # receive all items for /received
-    want_slot_data = False  # Can't use game specific slot_data
-
-    async def server_auth(self, password_requested: bool = False):
-        if password_requested and not self.password:
-            await super(TextContext, self).server_auth(password_requested)
-        await self.get_username()
-        await self.send_connect(game="")
-
-    def on_package(self, cmd: str, args: dict):
-        if cmd == "Connected":
-            self.game = self.slot_info[self.slot].game
-
-    async def disconnect(self, allow_autoreconnect: bool = False):
-        self.game = ""
-        await super().disconnect(allow_autoreconnect)
-
 async def async_main(args):
     # ctx = TextContext(args.connect, args.password)
     ctx = recomp_data.ctx
