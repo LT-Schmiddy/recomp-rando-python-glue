@@ -14,11 +14,11 @@ from CommonClient import CommonContext, ClientCommandProcessor, logger, server_l
 import logging
 import copy
 
+import recomp_data
+
 from rando_async_controller import AsyncLoopThread
 
 class RecompContext(CommonContext):
-    game = "Recomp Rando Glue" # TODO: allow for this to be changed (used for auth/knowing what game you're reading from?)
-
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
         self.autoreconnect_task = None # is this redundant?
@@ -38,7 +38,7 @@ class RecompContext(CommonContext):
         if password_requested and not self.password:
             pass # TODO: broadcast error message instead
 
-        # await self.get_username()
+        await self.get_username()
         await self.send_connect()
 
     def is_connected(self) -> bool:
@@ -70,8 +70,8 @@ class TextContext(CommonContext):
         await super().disconnect(allow_autoreconnect)
 
 async def async_main(args):
-    ctx = TextContext(args.connect, args.password)
-    ctx.auth = args.name
+    # ctx = TextContext(args.connect, args.password)
+    ctx = recomp_data.ctx
     ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
 
     ctx.run_cli() # force cli output
@@ -98,3 +98,13 @@ def run_as_textclient(*args):
     async_thread_loop.enqueue(async_main(args))
     return async_thread_loop
     # colorama.deinit()
+
+async def setup_ctx(game):
+    ctx = RecompContext('', '')
+    ctx.game = game
+    recomp_data.ctx = ctx
+
+def init_ctx(game):
+    async_thread_loop = AsyncLoopThread()
+    async_thread_loop.start()
+    async_thread_loop.enqueue(setup_ctx(game)).result()

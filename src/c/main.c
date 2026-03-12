@@ -19,7 +19,8 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     // create a `recomp_data` module to store variables that can be used in other python code
     REPY_ConstructModuleFromCStr(
         "recomp_data",
-        "mod_data_path = None",
+        "ctx = None\n"
+        "mod_data_path = None\n",
         1
     );
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
@@ -27,6 +28,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     // setup the `mod_data` path variable
     REPY_FN_SET_STR("mods_folder", (char*) recomp_get_mod_folder_path());
     REPY_FN_SET_STR("recomp_mod_id", mod_id);
+    REPY_FN_SET_STR("ap_game_str", ap_game_name);
 
     REPY_FN_EXEC_CACHE( // maybe move this to a separate python file?
         rando_setup_filepath,
@@ -45,8 +47,42 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "import RecompClient\n"
         "import Utils\n"
         "Utils.init_logging('RecompClient', exception_logger='Client')\n" // add condition for this to only appear for debugging?
-        "RecompClient.run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
+        // "RecompClient.run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
+        "RecompClient.init_ctx(ap_game_str)\n"
     );
+
+    // REPY_FN_EXEC_CACHE(
+    //     rando_connect,
+    //     "import RecompClient\n"
+    //     "import recomp_data\n"
+    //     "ctx = recomp_data.ctx\n"
+    //     "ctx.server_address = 'archipelago://' + 'localhost:38281'\n"
+    //     "ctx.auth = 'Hyped'\n"
+    //     "ctx.password = ''\n"
+    //     "RecompClient.run_as_textclient()\n"
+    // );
     
+    REPY_FN_CLEANUP;
+}
+
+// the "py" part is temporary until the old glue is fully replaced
+void py_rando_init(char* address, char* player_name, char* password) {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_SET_STR("ap_address", address);
+    REPY_FN_SET_STR("ap_player_name", player_name);
+    REPY_FN_SET_STR("ap_password", password);
+    
+    REPY_FN_EXEC_CACHE(
+        rando_connect,
+        "import RecompClient\n"
+        "import recomp_data\n"
+        "ctx = recomp_data.ctx\n"
+        "ctx.server_address = 'archipelago://' + ap_address\n"
+        "ctx.username = ap_player_name\n"
+        "ctx.password = ap_password\n"
+        "RecompClient.run_as_textclient()\n"
+    );
+
     REPY_FN_CLEANUP;
 }
