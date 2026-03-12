@@ -30,6 +30,7 @@ class RecompContext(CommonContext):
         self.full_inventory: List[Any] = []
 
         # our own variables
+        self.slot_data = dict()
         self.deathlink_enabled = False
         self.deathlink_pending = False
         
@@ -44,9 +45,10 @@ class RecompContext(CommonContext):
     def is_connected(self) -> bool:
         return self.server and self.server.socket.open
     
-    # TODO: custom handling per package here
-    # def on_package(self, cmd: str, args: dict):
-    # 	pass
+    # custom package handling
+    def on_package(self, cmd: str, args: dict):
+        if cmd == 'Connected':
+            self.slot_data = args.get("slot_data", {})
 
 class TextContext(CommonContext):
     # Text Mode to use !hint and such with games that have no text entry
