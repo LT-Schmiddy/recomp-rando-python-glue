@@ -42,13 +42,9 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
 
     REPY_FN_EXEC_CACHE(
         rando_setup,
-        // "from rando_test import test_func\n"
-        // "test_func()\n"
-        // "from CommonClient import run_as_textclient\n"
         "from RecompClient import run_as_textclient\n"
-        "import logging\n"
-        "logging.getLogger().setLevel(logging.INFO)\n"
-        "logging.basicConfig(format='AP: %(message)s')\n"
+        "import Utils\n"
+        "Utils.init_logging('RecompClient', exception_logger='Client')\n" // add condition for this to only appear for debugging?
         "run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
     );
     

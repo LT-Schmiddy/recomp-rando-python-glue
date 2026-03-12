@@ -69,16 +69,6 @@ class TextContext(CommonContext):
         self.game = ""
         await super().disconnect(allow_autoreconnect)
 
-    def on_print_json(self, args: dict):
-        # if self.ui:
-        #     # send copy to UI
-        #     self.ui.print_json(copy.deepcopy(args["data"]))
-
-        # logging.getLogger("FileLog").info(self.rawjsontotextparser(copy.deepcopy(args["data"])),
-        #                                   extra={"NoStream": True})
-        logging.getLogger("StreamLog").info(self.jsontotextparser(copy.deepcopy(args["data"])),
-                                            extra={"NoFile": True})
-
 async def async_main(args):
     ctx = TextContext(args.connect, args.password)
     ctx.auth = args.name
