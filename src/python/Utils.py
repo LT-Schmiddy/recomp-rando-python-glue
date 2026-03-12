@@ -155,7 +155,7 @@ def local_path(*path: str) -> str:
     if not hasattr(local_path, 'cached_path'):
         import recomp_data
         from pathlib import Path
-        local_path.cached_path = str(recomp_data.recomp_mod_data_path.joinpath("Archipelago", "local"))
+        local_path.cached_path = str(recomp_data.mod_data_path.joinpath("Archipelago", "local"))
     
     return os.path.join(local_path.cached_path, *path)
 
@@ -186,7 +186,7 @@ def home_path(*path: str) -> str:
     if not hasattr(home_path, 'cached_path'):
         import recomp_data
         from pathlib import Path
-        home_path.cached_path = str(recomp_data.recomp_mod_data_path.joinpath("Archipelago", "home"))
+        home_path.cached_path = str(recomp_data.mod_data_path.joinpath("Archipelago", "home"))
     
     return os.path.join(home_path.cached_path, *path)
 
@@ -226,7 +226,7 @@ def cache_path(*path: str) -> str:
         # cache_path.cached_path = platformdirs.user_cache_dir("Archipelago", False)
         import recomp_data
         from pathlib import Path
-        cache_path.cached_path = str(recomp_data.recomp_mod_data_path.joinpath("Archipelago", "cached_path"))
+        cache_path.cached_path = str(recomp_data.mod_data_path.joinpath("Archipelago", "cached_path"))
 
     return os.path.join(cache_path.cached_path, *path)
 

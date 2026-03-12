@@ -19,7 +19,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     // create a `recomp_data` module to store variables that can be used in other python code
     REPY_ConstructModuleFromCStr(
         "recomp_data",
-        "recomp_mod_data_path = None",
+        "mod_data_path = None",
         1
     );
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
@@ -37,15 +37,15 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "print(mod_data_path)"
     );
 
-    // REPY_SetAttrCStr(data_module, "recomp_mod_data_path", REPY_MakeSUH(REPY_FN_GET("mod_data_path")));
-    REPY_SetAttrCStr(data_module, "recomp_mod_data_path", REPY_MakeSUH(REPY_DictGetCStr(REPY_FN_LOCAL_SCOPE, "mod_data_path")));
+    // REPY_SetAttrCStr(data_module, "mod_data_path", REPY_MakeSUH(REPY_FN_GET("mod_data_path")));
+    REPY_SetAttrCStr(data_module, "mod_data_path", REPY_MakeSUH(REPY_DictGetCStr(REPY_FN_LOCAL_SCOPE, "mod_data_path")));
 
     REPY_FN_EXEC_CACHE(
         rando_setup,
-        "from RecompClient import run_as_textclient\n"
+        "import RecompClient\n"
         "import Utils\n"
         "Utils.init_logging('RecompClient', exception_logger='Client')\n" // add condition for this to only appear for debugging?
-        "run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
+        "RecompClient.run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
     );
     
     REPY_FN_CLEANUP;
