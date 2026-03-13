@@ -1,18 +1,11 @@
 import asyncio
-import time
 
 import Utils
 import websockets
 import functools
 import typing
-# from copy import deepcopy
-# from typing import List, Any, Iterable
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
-from MultiServer import Endpoint
-from CommonClient import CommonContext, ClientCommandProcessor, logger, server_loop, get_base_parser, handle_url_arg
-
-import logging
-import copy
+from CommonClient import CommonContext, server_loop
 
 import recomp_data
 
@@ -24,12 +17,8 @@ class RecompContext(CommonContext):
         self.autoreconnect_task = None # is this redundant?
         self.items_handling = 0b111 # allow for all items to come through/be processed
 
-        # taken from AHIT client
-        self.game_connected = False
-        self.awaiting_info = False
         self.full_inventory: List[Any] = []
 
-        # our own variables
         self.slot_data = dict()
         self.deathlink_enabled = False
         self.deathlink_pending = False
@@ -50,8 +39,8 @@ class RecompContext(CommonContext):
         if cmd == 'Connected':
             self.slot_data = args.get("slot_data", {})
 
-async def async_main(args):
-    # ctx = TextContext(args.connect, args.password)
+async def async_main():
+    # client context should be set up before this is called
     ctx = recomp_data.ctx
     ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
 
@@ -60,23 +49,15 @@ async def async_main(args):
     await ctx.exit_event.wait()
     await ctx.shutdown()
 
-# temp, easier to modify if needed
-def run_as_textclient(*args):    
+def connect_client(*args):    
     import colorama
-
-    parser = get_base_parser(description="Gameless Archipelago Client, for text interfacing.")
-    parser.add_argument('--name', default=None, help="Slot Name to connect as.")
-    parser.add_argument("url", nargs="?", help="Archipelago connection url")
-    args = parser.parse_args(args)
-
-    args = handle_url_arg(args, parser=parser)
 
     # use colorama to display colored text highlighting on windows
     colorama.just_fix_windows_console()
 
     async_thread_loop = AsyncLoopThread()
     async_thread_loop.start()
-    async_thread_loop.enqueue(async_main(args))
+    async_thread_loop.enqueue(async_main())
     return async_thread_loop
     # colorama.deinit()
 
@@ -85,7 +66,7 @@ async def setup_ctx(game):
     ctx.game = game
     recomp_data.ctx = ctx
 
-def init_ctx(game):
+def run_async_task_once(async_func):
     async_thread_loop = AsyncLoopThread()
     async_thread_loop.start()
-    async_thread_loop.enqueue(setup_ctx(game)).result()
+    async_thread_loop.enqueue(async_func).result()

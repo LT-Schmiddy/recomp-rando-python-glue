@@ -47,8 +47,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "import RecompClient\n"
         "import Utils\n"
         "Utils.init_logging('RecompClient', exception_logger='Client')\n" // add condition for this to only appear for debugging?
-        // "RecompClient.run_as_textclient('--name', 'Hyped', 'archipelago://localhost:38281')\n"
-        "RecompClient.init_ctx(ap_game_str)\n"
+        "RecompClient.run_async_task_once(RecompClient.setup_ctx(ap_game_str))\n"
     );
 
     // REPY_FN_EXEC_CACHE(
@@ -59,7 +58,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     //     "ctx.server_address = 'archipelago://' + 'localhost:38281'\n"
     //     "ctx.auth = 'Hyped'\n"
     //     "ctx.password = ''\n"
-    //     "RecompClient.run_as_textclient()\n"
+    //     "RecompClient.connect_client()\n"
     // );
     
     REPY_FN_CLEANUP;
@@ -81,7 +80,7 @@ void py_rando_init(char* address, char* player_name, char* password) {
         "ctx.server_address = 'archipelago://' + ap_address\n"
         "ctx.username = ap_player_name\n"
         "ctx.password = ap_password\n"
-        "RecompClient.run_as_textclient()\n"
+        "RecompClient.connect_client()\n"
     );
 
     REPY_FN_CLEANUP;
