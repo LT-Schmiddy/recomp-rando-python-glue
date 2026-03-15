@@ -80,6 +80,7 @@ void py_rando_init(char* address, char* player_name, char* password) {
         "ctx.server_address = 'archipelago://' + ap_address\n"
         "ctx.username = ap_player_name\n"
         "ctx.password = ap_password\n"
+        "RecompClient.save_ap_connect(ap_address, ap_player_name, ap_password)\n"
         "RecompClient.connect_client()\n"
     );
 

@@ -4,6 +4,7 @@ import Utils
 import websockets
 import functools
 import typing
+from pathlib import Path
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
 from CommonClient import CommonContext, server_loop
 
@@ -39,8 +40,8 @@ class RecompContext(CommonContext):
         if cmd == 'Connected':
             self.slot_data = args.get("slot_data", {})
 
+# client context should be set up before this is called
 async def async_main():
-    # client context should be set up before this is called
     ctx = recomp_data.ctx
     ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
 
@@ -70,3 +71,8 @@ def run_async_task_once(async_func):
     async_thread_loop = AsyncLoopThread()
     async_thread_loop.start()
     async_thread_loop.enqueue(async_func).result()
+
+# yes this still saves as "apconnect.txt" for the bit, even though a json would be better
+def save_ap_connect(address, player_name, password):
+    ap_connect = Path(recomp_data.mod_data_path, "apconnect.txt")
+    ap_connect.write_text(f"{address}\n{player_name}\n{password}")
