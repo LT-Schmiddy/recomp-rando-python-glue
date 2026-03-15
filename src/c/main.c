@@ -1,20 +1,9 @@
 #include "main.h"
 
-REPY_InterpreterIndex rando_interp = 0;
-REPY_Handle rando_globals = 0;
-
 void RandoGlue_Init(char* mod_id, char* ap_game_name) { 
-    rando_interp = REPY_RegisterSubinterpreter(); 
     REPY_SetInterpreterAutoDisarm(rando_interp, 1); // A hack fix until we have a proper shutdown event.
-    REPY_PushInterpreter(rando_interp);
-    REPY_AddNrmToSysPath();
-    rando_globals = REPY_CreateDict(0);
-    REPY_PopInterpreter();
-
-    recomp_printf("Subinterpreter %s Initialized\n", "rando_interp");
-
-    // REPY_FN_SETUP_INTERP(rando_interp);
-    REPY_FN_SETUP_RANDO;
+    
+    REPY_FN_SETUP_INTERP(rando_interp);
 
     // create a `recomp_data` module to store variables that can be used in other python code
     REPY_ConstructModuleFromCStr(
@@ -66,7 +55,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
 
 // the "py" part is temporary until the old glue is fully replaced
 void py_rando_init(char* address, char* player_name, char* password) {
-    REPY_FN_SETUP_RANDO;
+    REPY_FN_SETUP_INTERP(rando_interp);
 
     REPY_FN_SET_STR("ap_address", address);
     REPY_FN_SET_STR("ap_player_name", player_name);
