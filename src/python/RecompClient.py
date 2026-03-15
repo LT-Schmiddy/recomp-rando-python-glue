@@ -35,6 +35,10 @@ class RecompContext(CommonContext):
     def is_connected(self) -> bool:
         return self.server and self.server.socket.open
     
+    def on_deathlink(self, data: typing.Dict[str, typing.Any]) -> None:
+        self.deathlink_pending = True
+        super().on_deathlink(data)
+
     # custom package handling
     def on_package(self, cmd: str, args: dict):
         if cmd == 'Connected':

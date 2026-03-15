@@ -9,7 +9,10 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     REPY_ConstructModuleFromCStr(
         "recomp_data",
         "ctx = None\n"
-        "mod_data_path = None\n",
+        "mod_data_path = None\n"
+        "queued_scouts = set()\n"
+        "queued_locations = set()\n" // unsure if this will actually get used
+        "last_location_sent = 0\n",
         1
     );
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
