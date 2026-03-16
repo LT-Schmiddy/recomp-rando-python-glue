@@ -58,38 +58,33 @@ void rando_send_location(u32 location_id) {
         py_rando_send_location,
         "recomp_data.last_location_sent = location_id\n"
         "check_func = recomp_data.ctx.check_locations([location_id])\n"
-        'RecompClient.run_async_task_once(check_func)\n'
+        "RecompClient.run_async_task_once(check_func)\n"
     );
     REPY_FN_CLEANUP;
 }
-
-void rando_broadcast_location_hint(u32 location_id);
 
 void rando_complete_goal(u32 location_id) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
         py_rando_complete_goal,
-        'import RecompClient\n'
-        'msg_func = recomp_data.ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])\n'
-        'RecompClient.run_async_task_once(msg_func)\n'
+        "import RecompClient\n"
+        "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'StatusUpdate', 'status': ClientStatus.CLIENT_GOAL}])\n"
+        "RecompClient.run_async_task_once(msg_func)\n"
     );
     REPY_FN_CLEANUP;
 }
 
-bool rando_has_item(u32 item_id) {
+u32 rando_has_item(u32 item_id) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("item_id", item_id);
-    REPY_FN_EXEC_CACHE(
-        rando_has_item_exec, 
-        "has_item = False\n"
-        "for item in recomp_data.ctx.items_received:\n"
-        "    if item_id == item.item:\n"
-        "       has_item = True"
+    REPY_FN_EVAL_CACHE_U32(
+        py_rando_has_item, 
+        "recomp_data.ctx.recieved_item_ids.count(item_id)",
+        item_count
     );
-    bool has_item = REPY_FN_GET_BOOL("has_item");
     REPY_FN_CLEANUP;
-    return has_item;
+    return item_count;
 }
 
 // u32 rando_has_item_async(u32 item_id);
@@ -122,7 +117,7 @@ u32 rando_get_item(u32 items_index) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("index", items_index);
     REPY_FN_EVAL_CACHE_U32(
-        py_rando_get_items_size,
+        py_rando_get_item,
         "recomp_data.ctx.items_received[index].item",
         item
     );
@@ -133,7 +128,7 @@ u32 rando_get_item(u32 items_index) {
 // okay i'm getting lost at this point
 // also i'm ripping this out in mm for something better because man.
 s32 rando_get_item_location(u32 items_index) {
-    if (items_index > rando_get_items_size) {
+    if (items_index > rando_get_items_size()) {
         return 0;
     }
 
@@ -150,7 +145,7 @@ s32 rando_get_item_location(u32 items_index) {
 
 // same as above, but this is actually used by other randos
 s32 rando_get_sending_player(u32 items_index) {
-    if (items_index > rando_get_items_size) {
+    if (items_index > rando_get_items_size()) {
         return 0;
     }
     
@@ -174,14 +169,14 @@ void rando_get_item_name_from_id(u32 item_id, char* out_str) {
         "item_name = recomp_data.ctx.item_names[item_id]\n"
         "item_name_len = len(item_name)\n" // temp?
     );
-    REPY_MemcpyFromBytes(out_str, REPY_FN_GET_U32(item_name_len), 0, REPY_FN_GET(item_name));
+    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("item_name"));
     REPY_FN_CLEANUP;
 }
 
 // make this require a max string length (also don't like how this is)
 void rando_get_sending_player_name(u32 items_index, char* out_str) {
-    if (items_index > rando_get_items_size) {
-        return 0;
+    if (items_index > rando_get_items_size()) {
+        return;
     }
 
     s32 player_slot = rando_get_sending_player(items_index);
@@ -190,10 +185,9 @@ void rando_get_sending_player_name(u32 items_index, char* out_str) {
     REPY_FN_SET_S32("player_slot", player_slot);
     REPY_FN_EXEC_CACHE(
         py_rando_get_sending_player_name,
-        "player_name = recomp_data.ctx.player_names[player_slot]\n"
-        "player_name_len = len(player_name)\n" // temp?
+        "player_name = recomp_data.ctx.player_names[player_slot]"
     );
-    REPY_MemcpyFromBytes(out_str, REPY_FN_GET_U32(player_name_len), 0, REPY_FN_GET(player_name));
+    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("player_name"));
     REPY_FN_CLEANUP;
 }
 
@@ -205,9 +199,8 @@ void rando_get_location_item_player(u32 location_id, char* out_str) {
         py_rando_get_location_item_player,
         "player_slot = recomp_data.ctx.locations_info[location_id].player\n"
         "player_name = recomp_data.ctx.player_names[player_slot]\n"
-        "player_name_len = len(player_name)\n" // temp?
     );
-    REPY_MemcpyFromBytes(out_str, REPY_FN_GET_U32(player_name_len), 0, REPY_FN_GET(player_name));
+    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("player_name"));
     REPY_FN_CLEANUP;
 }
 
@@ -230,10 +223,9 @@ void rando_get_location_item_name(u32 location_id, char* out_str) {
     REPY_FN_EXEC_CACHE(
         py_rando_get_location_item_name,
         "item_id = recomp_data.ctx.locations_info[location_id].item\n"
-        "item_name = recomp_data.ctx.item_names[item_id]\n"
-        "item_name_len = len(item_name)\n" // temp?
+        "item_name = recomp_data.ctx.item_names[item_id]"
     );
-    REPY_MemcpyFromBytes(out_str, REPY_FN_GET_U32(item_name_len), 0, REPY_FN_GET(item_name));
+    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("item_name"));
     REPY_FN_CLEANUP;
 }
 
@@ -255,8 +247,9 @@ u32 rando_get_seed_name(char* seed_name_out, u32 buffer_size) {
         "recomp_data.ctx.seed_name",
         seed_name
     );
-    REPY_MemcpyFromBytes(seed_name_out, buffer_size, 0, REPY_FN_GET(seed_name));
+    seed_name_out = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("seed_name"));
     REPY_FN_CLEANUP;
+    return 0; // temp
 }
 
 // make this require a max string length
@@ -264,15 +257,40 @@ void rando_get_own_slot_name(char* out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_location_item_name,
-        "name = recomp_data.ctx.player_names[recomp_data.ctx.slot]\n"
-        "name_len = len(name)\n" // temp?
+        "name = recomp_data.ctx.player_names[recomp_data.ctx.slot]"
     );
-    REPY_MemcpyFromBytes(out_str, REPY_FN_GET_U32(name_len), 0, REPY_FN_GET(name));
+    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("name"));
     REPY_FN_CLEANUP;
 }
 
-void rando_get_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password);
-void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password);
+void rando_get_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_EXEC_CACHE(
+        py_rando_get_saved_apconnect,
+        "import RecompClient\n"
+        "connection_info = RecompClient.get_ap_connect()\n"
+        "address = connection_info[0]\n"
+        "player_name = connection_info[1]\n"
+        "password = connection_info[2]\n"
+    );
+    address = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("address"));
+    player_name = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("player_name"));
+    password = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("password"));
+    REPY_FN_CLEANUP;
+}
+
+void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_STR("address", address);
+    REPY_FN_SET_STR("player_name", player_name);
+    REPY_FN_SET_STR("password", password);
+    REPY_FN_EXEC_CACHE(
+        py_rando_set_saved_apconnect,
+        "import RecompClient\n"
+        "RecompClient.save_ap_connect(address, player_name, password)\n"
+    );
+    REPY_FN_CLEANUP;
+}
 
 bool rando_location_exists(u32 location_id) {
     REPY_FN_SETUP_RANDO;
@@ -300,10 +318,9 @@ void rando_queue_scout(u32 location) {
 
 void rando_queue_scouts_all() {
     REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location", location);
     REPY_FN_EXEC_CACHE(
         py_rando_queue_scouts_all,
-        "recomp_data.queued_scouts.add(recomp_data.ctx.server_locations)"
+        "recomp_data.queued_scouts = recomp_data.ctx.server_locations"
     );
     REPY_FN_CLEANUP;
 }
@@ -323,12 +340,26 @@ void rando_send_queued_scouts(int hint) {
     REPY_FN_SET_U32("hint", hint);
     REPY_FN_EXEC_CACHE(
         py_rando_send_queued_scouts,
-        'import RecompClient\n'
-        'recomp_data.ctx.locations_scouted = recomp_data.queued_scouts\n'
-        'msg_func = recomp_data.ctx.send_msgs([{"cmd": "LocationScouts",\n'
-        '                                       "locations": list(recomp_data.queued_scouts),\n'
-        '                                       "create_as_hint": hint}])\n'
-        'RecompClient.run_async_task_once(msg_func)\n'
+        "import RecompClient\n"
+        "recomp_data.ctx.locations_scouted = recomp_data.queued_scouts\n"
+        "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
+        "                                       \"locations\": list(recomp_data.queued_scouts),\n"
+        "                                       \"create_as_hint\": hint}])\n"
+        "RecompClient.run_async_task_once(msg_func)\n"
+    );
+    REPY_FN_CLEANUP;
+}
+
+void rando_broadcast_location_hint(u32 location_id) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_U32("location", location_id);
+    REPY_FN_EXEC_CACHE(
+        py_rando_broadcast_location_hint,
+        "import RecompClient\n"
+        "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
+        "                                       \"locations\": list(location),\n"
+        "                                       \"create_as_hint\": True}])\n"
+        "RecompClient.run_async_task_once(msg_func)\n"
     );
     REPY_FN_CLEANUP;
 }
@@ -361,9 +392,9 @@ void rando_send_death_link() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_send_death_link,
-        'import RecompClient\n'
-        'deathlink_func = recomp_data.ctx.send_death()\n'
-        'RecompClient.run_async_task_once(deathlink_func)\n'
+        "import RecompClient\n"
+        "deathlink_func = recomp_data.ctx.send_death()\n"
+        "RecompClient.run_async_task_once(deathlink_func)\n"
     );
     REPY_FN_CLEANUP;
 }
@@ -373,9 +404,9 @@ void rando_send_death_link_msg(char* death_msg) {
     REPY_FN_SET_STR("death_msg", death_msg);
     REPY_FN_EXEC_CACHE(
         py_rando_send_death_link_msg,
-        'import RecompClient\n'
-        'deathlink_func = recomp_data.ctx.send_death(death_msg)\n'
-        'RecompClient.run_async_task_once(deathlink_func)\n'
+        "import RecompClient\n"
+        "deathlink_func = recomp_data.ctx.send_death(death_msg)\n"
+        "RecompClient.run_async_task_once(deathlink_func)\n"
     );
     REPY_FN_CLEANUP;
 }
@@ -404,7 +435,7 @@ bool rando_get_death_link_enabled() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EVAL_CACHE_BOOL(
         py_rando_get_death_link_pending,
-        '"DeathLink" in recomp_data.ctx.tags',
+        "'DeathLink' in recomp_data.ctx.tags",
         enabled
     );
     REPY_FN_CLEANUP;
@@ -416,49 +447,30 @@ void rando_toggle_death_link(bool toggle) {
     REPY_FN_SET_BOOL("toggle", toggle);
     REPY_FN_EXEC_CACHE(
         py_rando_toggle_death_link,
-        'import RecompClient\n'
-        'deathlink_func = recomp_data.ctx.update_death_link(toggle)\n'
-        'RecompClient.run_async_task_once(deathlink_func)\n'
+        "import RecompClient\n"
+        "deathlink_func = recomp_data.ctx.update_death_link(toggle)\n"
+        "RecompClient.run_async_task_once(deathlink_func)\n"
     );
     REPY_FN_CLEANUP;
 }
 
-// solo
-void rando_scan_solo_seeds(const unsigned char* save_filename);
-u32 rando_solo_count();
-u32 rando_solo_get_seed_name(u32 seed_index, char* out, u32 max_length); // Returns the actual string length
-u32 rando_solo_get_generation_date(u32 seed_index, char* out, u32 max_length); // Returns the actual string length
-u32 rando_init_solo(u32 seed_index);
-
-void rando_yaml_init();
-void rando_yaml_puts(const char* text, u32 size);
-void rando_yaml_finalize(const unsigned char* save_path);
-bool rando_solo_generate();
+// this should hash the seed name + slot number into a random seed either the randomizer or other mods can use
+u32 rando_get_random_seed() {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_EXEC_CACHE(
+        py_rando_get_random_seed,
+        "import hashlib\n"
+        "ctx = recomp_data.ctx\n"
+        "hashed_seed = int.from_bytes(hashlib.sha256((ctx.seed_name + ctx.slot).encode('utf-8')))\n"
+    );
+    REPY_FN_CLEANUP;
+    return REPY_FN_GET_U32("hashed_seed");
+}
 
 // everything below is mm specific slotdata stuff that will need to be altered in the mm repo
-u32 rando_get_moon_remains_required();
-u32 rando_get_majora_remains_required();
-u32 rando_get_random_seed(); // generate at runtime
-bool rando_is_magic_trap();
-// bool rando_get_camc_enabled();
-bool rando_skulltulas_enabled();
-bool rando_shopsanity_enabled();
-bool rando_advanced_shops_enabled();
-bool rando_get_curiostity_shop_trades();
-bool rando_scrubs_enabled();
-bool rando_cows_enabled();
-u32 rando_damage_multiplier();
-u32 rando_death_behavior();
-s16 rando_get_shop_price(u32 shop_item_id); // game specific
+// bool rando_advanced_shops_enabled(); // not used?
+// u32 rando_damage_multiplier(); modified manually
+// s16 rando_get_shop_price(u32 shop_item_id); // game specific
 
-bool rando_get_remains_allow_boss_warps_enabled();
-bool rando_get_permanent_chateau_romani_enabled();
-bool rando_get_start_with_consumables_enabled();
-bool rando_get_start_with_inverted_time_enabled();
-bool rando_get_receive_filled_wallets_enabled();
-int rando_get_tunic_color();
-
-int rando_get_starting_heart_locations();
-int rando_get_tunic_color();
-bool rando_get_game_is_oot(u32 player_id);
-bool rando_get_game_is_ww(u32 player_id);
+// bool rando_get_game_is_oot(u32 player_id);
+// bool rando_get_game_is_ww(u32 player_id);

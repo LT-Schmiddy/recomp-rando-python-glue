@@ -56,8 +56,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     REPY_FN_CLEANUP;
 }
 
-// the "py" part is temporary until the old glue is fully replaced
-void py_rando_init(char* address, char* player_name, char* password) {
+bool rando_init(char* address, char* player_name, char* password) {
     REPY_FN_SETUP_INTERP(rando_interp);
 
     REPY_FN_SET_STR("ap_address", address);
@@ -68,13 +67,16 @@ void py_rando_init(char* address, char* player_name, char* password) {
         rando_connect,
         "import RecompClient\n"
         "import recomp_data\n"
+        "import time\n"
         "ctx = recomp_data.ctx\n"
         "ctx.server_address = 'archipelago://' + ap_address\n"
         "ctx.username = ap_player_name\n"
         "ctx.password = ap_password\n"
-        "RecompClient.save_ap_connect(ap_address, ap_player_name, ap_password)\n"
+        // "RecompClient.save_ap_connect(ap_address, ap_player_name, ap_password)\n"
         "RecompClient.connect_client()\n"
+        "time.sleep(1)"
     );
 
     REPY_FN_CLEANUP;
+    return 1; // temp until failure to connect is handled correctly
 }

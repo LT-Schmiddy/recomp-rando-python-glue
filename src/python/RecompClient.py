@@ -18,7 +18,7 @@ class RecompContext(CommonContext):
         self.autoreconnect_task = None # is this redundant?
         self.items_handling = 0b111 # allow for all items to come through/be processed
 
-        self.full_inventory: List[Any] = []
+        self.recieved_item_ids: List[Any] = [] # mirrors items_received, but is only the item ids
 
         self.slot_data = dict()
         self.deathlink_enabled = False
@@ -43,6 +43,11 @@ class RecompContext(CommonContext):
     def on_package(self, cmd: str, args: dict):
         if cmd == 'Connected':
             self.slot_data = args.get("slot_data", {})
+        elif cmd == 'ReceivedItems':
+            # probably dumb to reset the list every time
+            self.recieved_item_ids = []
+            for item in self.items_received:
+                self.recieved_item_ids.append(item.item)
 
 # client context should be set up before this is called
 async def async_main():
@@ -80,3 +85,16 @@ def run_async_task_once(async_func):
 def save_ap_connect(address, player_name, password):
     ap_connect = Path(recomp_data.mod_data_path, "apconnect.txt")
     ap_connect.write_text(f"{address}\n{player_name}\n{password}")
+
+def get_ap_connect():
+    ap_connect = Path(recomp_data.mod_data_path, "apconnect.txt")
+    
+    if not ap_connect.exists(): # first time running the randomizer
+        ap_connect.write_text("archipelago.gg:38281\nPlayer\n")
+
+    connection_info = ap_connect.read_text().splitlines()
+    
+    if len(connection_info) < 3:
+        connection_info.append("") # empty password
+    
+    return connection_info

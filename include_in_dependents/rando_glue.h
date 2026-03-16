@@ -1,9 +1,12 @@
 #include "repy_api.h"
 
+#include "PR/ultratypes.h"
+#define bool    u32
+
 REPY_EXTERN_SUBINTERPRETER(rando_interp);
 
 void RandoGlue_Init(char* mod_id, char* ap_game_name);
-void py_rando_init(char* address, char* player_name, char* password);
+bool rando_init(char* address, char* player_name, char* password);
 
 bool rando_location_is_checked(u32 location_id);
 // bool rando_location_is_checked_async(u32 location_id);
@@ -17,7 +20,6 @@ void rando_send_location(u32 location_id);
 void rando_complete_goal();
 
 u32 rando_has_item(u32 item_id);
-u32 rando_has_item_async(u32 item_id);
 u32 rando_get_own_slot_id();
 
 u32 rando_get_items_size(); // might want a new system for this
