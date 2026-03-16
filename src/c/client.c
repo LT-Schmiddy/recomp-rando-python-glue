@@ -161,7 +161,7 @@ s32 rando_get_sending_player(u32 items_index) {
 }
 
 // make this require a max string length
-void rando_get_item_name_from_id(u32 item_id, char* out_str) {
+void rando_get_item_name_from_id(u32 item_id, char** out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("item_id", item_id);
     REPY_FN_EXEC_CACHE(
@@ -169,12 +169,12 @@ void rando_get_item_name_from_id(u32 item_id, char* out_str) {
         "item_name = recomp_data.ctx.item_names[item_id]\n"
         "item_name_len = len(item_name)\n" // temp?
     );
-    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("item_name"));
+    (*out_str) = REPY_FN_GET_STR("item_name");
     REPY_FN_CLEANUP;
 }
 
 // make this require a max string length (also don't like how this is)
-void rando_get_sending_player_name(u32 items_index, char* out_str) {
+void rando_get_sending_player_name(u32 items_index, char** out_str) {
     if (items_index > rando_get_items_size()) {
         return;
     }
@@ -187,12 +187,12 @@ void rando_get_sending_player_name(u32 items_index, char* out_str) {
         py_rando_get_sending_player_name,
         "player_name = recomp_data.ctx.player_names[player_slot]"
     );
-    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("player_name"));
+    (*out_str) = REPY_FN_GET_STR("player_name");
     REPY_FN_CLEANUP;
 }
 
 // make this require a max string length
-void rando_get_location_item_player(u32 location_id, char* out_str) {
+void rando_get_location_item_player(u32 location_id, char** out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
@@ -200,7 +200,7 @@ void rando_get_location_item_player(u32 location_id, char* out_str) {
         "player_slot = recomp_data.ctx.locations_info[location_id].player\n"
         "player_name = recomp_data.ctx.player_names[player_slot]\n"
     );
-    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("player_name"));
+    (*out_str) = REPY_FN_GET_STR("player_name");
     REPY_FN_CLEANUP;
 }
 
@@ -217,7 +217,7 @@ u32 rando_get_location_item_player_id(u32 location_id) {
 }
 
 // make this require a max string length
-void rando_get_location_item_name(u32 location_id, char* out_str) {
+void rando_get_location_item_name(u32 location_id, char** out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
@@ -225,7 +225,7 @@ void rando_get_location_item_name(u32 location_id, char* out_str) {
         "item_id = recomp_data.ctx.locations_info[location_id].item\n"
         "item_name = recomp_data.ctx.item_names[item_id]"
     );
-    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("item_name"));
+    (*out_str) = REPY_FN_GET_STR("item_name");
     REPY_FN_CLEANUP;
 }
 
@@ -240,30 +240,30 @@ u32 rando_get_last_location_sent() {
     return location_id;
 }
 
-u32 rando_get_seed_name(char* seed_name_out, u32 buffer_size) {
+u32 rando_get_seed_name(char** seed_name_out, u32 buffer_size) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EVAL_CACHE_BYTESTR(
         py_rando_get_seed_name,
         "recomp_data.ctx.seed_name",
         seed_name
     );
-    seed_name_out = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("seed_name"));
+    (*seed_name_out) = REPY_FN_GET_STR("seed_name");
     REPY_FN_CLEANUP;
     return 0; // temp
 }
 
 // make this require a max string length
-void rando_get_own_slot_name(char* out_str) {
+void rando_get_own_slot_name(char** out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_location_item_name,
         "name = recomp_data.ctx.player_names[recomp_data.ctx.slot]"
     );
-    out_str = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("name"));
+    (*out_str) = REPY_FN_GET_STR("name");
     REPY_FN_CLEANUP;
 }
 
-void rando_get_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password) {
+void rando_get_saved_apconnect(u8* save_dir, char** address, char** player_name, char** password) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_saved_apconnect,
@@ -273,9 +273,9 @@ void rando_get_saved_apconnect(u8* save_dir, char* address, char* player_name, c
         "player_name = connection_info[1]\n"
         "password = connection_info[2]\n"
     );
-    address = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("address"));
-    player_name = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("player_name"));
-    password = REPY_FN_DEFER_RECOMP_FREE(REPY_FN_GET_STR("password"));
+    (*address) = REPY_FN_GET_STR("address");
+    (*player_name) = REPY_FN_GET_STR("player_name");
+    (*password) = REPY_FN_GET_STR("password");
     REPY_FN_CLEANUP;
 }
 

@@ -27,15 +27,15 @@ u32 rando_get_item(u32 items_i);
 s32 rando_get_item_location(u32 items_i);
 u32 rando_get_sending_player(u32 items_i);
 
-void rando_get_item_name_from_id(u32 item_id, char* out_str);
-void rando_get_sending_player_name(u32 items_i, char* out_str);
-void rando_get_location_item_player(u32 location_id, char* out_str);
+void rando_get_item_name_from_id(u32 item_id, char** out_str);
+void rando_get_sending_player_name(u32 items_i, char** out_str);
+void rando_get_location_item_player(u32 location_id, char** out_str);
 int rando_get_location_item_player_id(u32 location_id);
-void rando_get_location_item_name(u32 location_id, char* out_str);
+void rando_get_location_item_name(u32 location_id, char** out_str);
 u32 rando_get_last_location_sent();
-u32 rando_get_seed_name(char* seed_name_out, u32 buffer_size);
-void rando_get_own_slot_name(char* out_str);
-void rando_get_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password);
+u32 rando_get_seed_name(char** seed_name_out, u32 buffer_size);
+void rando_get_own_slot_name(char** out_str);
+void rando_get_saved_apconnect(u8* save_dir, char** address, char** player_name, char** password);
 void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password);
 bool rando_location_exists(u32 location_id);
 
