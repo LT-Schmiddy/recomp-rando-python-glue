@@ -81,6 +81,11 @@ async def setup_ctx(game):
 def run_async_task_once(async_func):
     async_thread_loop = AsyncLoopThread()
     async_thread_loop.start()
+    async_thread_loop.enqueue(async_func)
+
+def run_async_task_and_wait_once(async_func):
+    async_thread_loop = AsyncLoopThread()
+    async_thread_loop.start()
     async_thread_loop.enqueue(async_func).result()
 
 # yes this still saves as "apconnect.txt" for the bit, even though a json would be better

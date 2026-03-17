@@ -58,7 +58,7 @@ void rando_send_location(u32 location_id) {
         py_rando_send_location,
         "recomp_data.last_location_sent = location_id\n"
         "check_func = recomp_data.ctx.check_locations([location_id])\n"
-        "RecompClient.run_async_task_once(check_func)\n"
+        "RecompClient.run_async_task_and_wait_once(check_func)\n"
     );
     REPY_FN_CLEANUP;
 }
@@ -69,7 +69,7 @@ void rando_complete_goal(u32 location_id) {
     REPY_FN_EXEC_CACHE(
         py_rando_complete_goal,
         "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'StatusUpdate', 'status': ClientStatus.CLIENT_GOAL}])\n"
-        "RecompClient.run_async_task_once(msg_func)\n"
+        "RecompClient.run_async_task_and_wait_once(msg_func)\n"
     );
     REPY_FN_CLEANUP;
 }
@@ -340,7 +340,7 @@ void rando_send_queued_scouts(int hint) {
         "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
         "                                       \"locations\": list(recomp_data.queued_scouts),\n"
         "                                       \"create_as_hint\": hint}])\n"
-        "RecompClient.run_async_task_once(msg_func)\n"
+        "RecompClient.run_async_task_and_wait_once(msg_func)\n"
     );
     REPY_FN_CLEANUP;
 }
