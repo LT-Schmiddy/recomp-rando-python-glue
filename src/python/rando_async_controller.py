@@ -15,7 +15,7 @@ class AsyncLoopThread:
     def __init__(self, quantum: float = 0.01):
         # Initialize all values:
         self._running = False
-        self._thread = threading.Thread(target=self._thread_func)
+        self._thread = threading.Thread(target=self._thread_func, daemon=True)
         self._event_loop = None
         self._loop_created_event = threading.Event()
         self._exit_event = threading.Event()

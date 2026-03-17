@@ -1,7 +1,7 @@
 #include "main.h"
 
 void RandoGlue_Init(char* mod_id, char* ap_game_name) { 
-    REPY_SetInterpreterAutoDisarm(rando_interp, 1); // A hack fix until we have a proper shutdown event.
+    // REPY_SetInterpreterAutoDisarm(rando_interp, 1); // A hack fix until we have a proper shutdown event.
     
     REPY_FN_SETUP_INTERP(rando_interp);
 
