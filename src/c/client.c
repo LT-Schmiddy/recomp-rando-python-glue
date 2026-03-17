@@ -68,7 +68,6 @@ void rando_complete_goal(u32 location_id) {
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
         py_rando_complete_goal,
-        "import RecompClient\n"
         "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'StatusUpdate', 'status': ClientStatus.CLIENT_GOAL}])\n"
         "RecompClient.run_async_task_once(msg_func)\n"
     );
@@ -266,7 +265,6 @@ void rando_get_saved_apconnect(u8* save_dir, char** address, char** player_name,
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_saved_apconnect,
-        "import RecompClient\n"
         "connection_info = RecompClient.get_ap_connect()\n"
         "address = connection_info[0]\n"
         "player_name = connection_info[1]\n"
@@ -285,7 +283,6 @@ void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, c
     REPY_FN_SET_STR("password", password);
     REPY_FN_EXEC_CACHE(
         py_rando_set_saved_apconnect,
-        "import RecompClient\n"
         "RecompClient.save_ap_connect(address, player_name, password)\n"
     );
     REPY_FN_CLEANUP;
@@ -339,7 +336,6 @@ void rando_send_queued_scouts(int hint) {
     REPY_FN_SET_U32("hint", hint);
     REPY_FN_EXEC_CACHE(
         py_rando_send_queued_scouts,
-        "import RecompClient\n"
         "recomp_data.ctx.locations_scouted = recomp_data.queued_scouts\n"
         "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
         "                                       \"locations\": list(recomp_data.queued_scouts),\n"
@@ -354,7 +350,6 @@ void rando_broadcast_location_hint(u32 location_id) {
     REPY_FN_SET_U32("location", location_id);
     REPY_FN_EXEC_CACHE(
         py_rando_broadcast_location_hint,
-        "import RecompClient\n"
         "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
         "                                       \"locations\": list(location),\n"
         "                                       \"create_as_hint\": True}])\n"
@@ -391,7 +386,6 @@ void rando_send_death_link() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_send_death_link,
-        "import RecompClient\n"
         "deathlink_func = recomp_data.ctx.send_death()\n"
         "RecompClient.run_async_task_once(deathlink_func)\n"
     );
@@ -403,7 +397,6 @@ void rando_send_death_link_msg(char* death_msg) {
     REPY_FN_SET_STR("death_msg", death_msg);
     REPY_FN_EXEC_CACHE(
         py_rando_send_death_link_msg,
-        "import RecompClient\n"
         "deathlink_func = recomp_data.ctx.send_death(death_msg)\n"
         "RecompClient.run_async_task_once(deathlink_func)\n"
     );
@@ -446,7 +439,6 @@ void rando_toggle_death_link(bool toggle) {
     REPY_FN_SET_BOOL("toggle", toggle);
     REPY_FN_EXEC_CACHE(
         py_rando_toggle_death_link,
-        "import RecompClient\n"
         "deathlink_func = recomp_data.ctx.update_death_link(toggle)\n"
         "RecompClient.run_async_task_once(deathlink_func)\n"
     );
