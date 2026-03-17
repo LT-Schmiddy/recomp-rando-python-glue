@@ -165,7 +165,7 @@ void rando_get_item_name_from_id(u32 item_id, char** out_str) {
     REPY_FN_SET_U32("item_id", item_id);
     REPY_FN_EXEC_CACHE(
         py_rando_get_item_name_from_id,
-        "item_name = recomp_data.ctx.item_names[item_id]\n"
+        "item_name = recomp_data.ctx.item_names.lookup_in_game(item_id)\n"
         "item_name_len = len(item_name)\n" // temp?
     );
     (*out_str) = REPY_FN_GET_STR("item_name");
@@ -222,7 +222,7 @@ void rando_get_location_item_name(u32 location_id, char** out_str) {
     REPY_FN_EXEC_CACHE(
         py_rando_get_location_item_name,
         "item_id = recomp_data.ctx.locations_info[location_id].item\n"
-        "item_name = recomp_data.ctx.item_names[item_id]"
+        "item_name = recomp_data.ctx.item_names.lookup_in_game(item_id)"
     );
     (*out_str) = REPY_FN_GET_STR("item_name");
     REPY_FN_CLEANUP;
@@ -351,7 +351,7 @@ void rando_broadcast_location_hint(u32 location_id) {
     REPY_FN_EXEC_CACHE(
         py_rando_broadcast_location_hint,
         "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
-        "                                       \"locations\": list(location),\n"
+        "                                       \"locations\": [location],\n"
         "                                       \"create_as_hint\": True}])\n"
         "RecompClient.run_async_task_once(msg_func)\n"
     );
