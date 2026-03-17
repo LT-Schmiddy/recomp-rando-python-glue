@@ -5,7 +5,7 @@ bool rando_location_is_checked(u32 location_id) {
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EVAL_CACHE_BOOL(
         py_rando_location_is_checked,
-        "location_id in recomp_data.ctx.locations_checked", // checked_locations is server checked while locations_checked is in the client
+        "location_id in recomp_data.ctx.checked_locations", // checked_locations is server checked while locations_checked is in the client
         checked
     );
     REPY_FN_CLEANUP;
