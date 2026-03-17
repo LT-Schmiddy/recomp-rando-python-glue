@@ -242,10 +242,9 @@ u32 rando_get_last_location_sent() {
 
 u32 rando_get_seed_name(char** seed_name_out, u32 buffer_size) {
     REPY_FN_SETUP_RANDO;
-    REPY_FN_EVAL_CACHE_BYTESTR(
+    REPY_FN_EXEC_CACHE(
         py_rando_get_seed_name,
-        "recomp_data.ctx.seed_name",
-        seed_name
+        "seed_name = recomp_data.ctx.seed_name"
     );
     (*seed_name_out) = REPY_FN_GET_STR("seed_name");
     REPY_FN_CLEANUP;

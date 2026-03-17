@@ -43,6 +43,8 @@ class RecompContext(CommonContext):
     def on_package(self, cmd: str, args: dict):
         if cmd == 'Connected':
             self.slot_data = args.get("slot_data", {})
+        elif cmd == "RoomInfo":
+            self.seed_name = args["seed_name"]
         elif cmd == 'ReceivedItems':
             # probably dumb to reset the list every time
             self.recieved_item_ids = []
