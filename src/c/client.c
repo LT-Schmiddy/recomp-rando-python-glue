@@ -1,4 +1,5 @@
 #include "main.h"
+#include "rando_glue.h"
 
 bool rando_location_is_checked(u32 location_id) {
     REPY_FN_SETUP_RANDO;
@@ -15,6 +16,13 @@ bool rando_location_is_checked(u32 location_id) {
 // bool rando_location_is_checked_async(u32 location_id); // unneeded
 
 u32 rando_get_location_type(u32 location_id) { // could technically be a u8
+    if (!rando_location_exists(location_id)) {
+        if (DEBUG_GLUE) {
+            recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
+        }
+        return 0;
+    }
+    
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EVAL_CACHE_U32(
@@ -27,6 +35,13 @@ u32 rando_get_location_type(u32 location_id) { // could technically be a u8
 }
 
 bool rando_get_location_has_local_item(u32 location_id) {
+    if (!rando_location_exists(location_id)) {
+        if (DEBUG_GLUE) {
+            recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
+        }
+        return 0;
+    }
+    
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EVAL_CACHE_BOOL(
@@ -39,6 +54,13 @@ bool rando_get_location_has_local_item(u32 location_id) {
 }
 
 u32 rando_get_item_at_location(u32 location_id) {
+    if (!rando_location_exists(location_id)) {
+        if (DEBUG_GLUE) {
+            recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
+        }
+        return 0;
+    }
+    
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EVAL_CACHE_U32(
@@ -63,9 +85,8 @@ void rando_send_location(u32 location_id) {
     REPY_FN_CLEANUP;
 }
 
-void rando_complete_goal(u32 location_id) {
+void rando_complete_goal() {
     REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
         py_rando_complete_goal,
         "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'StatusUpdate', 'status': ClientStatus.CLIENT_GOAL}])\n"
@@ -143,14 +164,14 @@ s32 rando_get_item_location(u32 items_index) {
 }
 
 // same as above, but this is actually used by other randos
-s32 rando_get_sending_player(u32 items_index) {
+u32 rando_get_sending_player(u32 items_index) {
     if (items_index > rando_get_items_size()) {
         return 0;
     }
     
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("index", items_index);
-    REPY_FN_EVAL_CACHE_S32(
+    REPY_FN_EVAL_CACHE_U32(
         py_rando_get_sending_player, 
         "recomp_data.ctx.items_received[index].player",
         sending_player
@@ -192,6 +213,13 @@ void rando_get_sending_player_name(u32 items_index, char** out_str) {
 
 // make this require a max string length
 void rando_get_location_item_player(u32 location_id, char** out_str) {
+    if (!rando_location_exists(location_id)) {
+        if (DEBUG_GLUE) {
+            recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
+        }
+        return;
+    }
+    
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
@@ -204,6 +232,13 @@ void rando_get_location_item_player(u32 location_id, char** out_str) {
 }
 
 u32 rando_get_location_item_player_id(u32 location_id) {
+    if (!rando_location_exists(location_id)) {
+        if (DEBUG_GLUE) {
+            recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
+        }
+        return 0;
+    }
+
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EVAL_CACHE_U32(
@@ -217,6 +252,13 @@ u32 rando_get_location_item_player_id(u32 location_id) {
 
 // make this require a max string length
 void rando_get_location_item_name(u32 location_id, char** out_str) {
+    if (!rando_location_exists(location_id)) {
+        if (DEBUG_GLUE) {
+            recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
+        }
+        return;
+    }
+    
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(

@@ -5,6 +5,8 @@
 #include "PR/ultratypes.h"
 #define bool    u32
 
+#define DEBUG_GLUE 0
+
 REPY_EXTERN_SUBINTERPRETER(rando_interp);
 
 #define REPY_FN_SETUP_RANDO \
