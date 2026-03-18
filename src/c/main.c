@@ -4,10 +4,12 @@ U32ValueHashmapHandle rando_location_item_map;
 U32ValueHashmapHandle rando_location_player_map;
 U32ValueHashmapHandle rando_location_flag_map;
 
-void RandoGlue_Init(char* mod_id, char* ap_game_name) { 
-    REPY_SetInterpreterAutoDisarm(rando_interp, true); // A hack fix until we have a proper shutdown event.
+void RandoGlue_Init(char* mod_id, char* ap_game_name) {
+    // REPY_SetInterpreterAutoDisarm(rando_interp, true); // A hack fix until we have a proper shutdown event.
     
     REPY_FN_SETUP_INTERP(rando_interp);
+
+    REPY_AddNrmToSysPath();
 
     // create a `recomp_data` module to store variables that can be used in other python code
     REPY_ConstructModuleFromCStr(
