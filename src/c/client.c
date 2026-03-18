@@ -35,16 +35,8 @@ bool rando_get_location_has_local_item(u32 location_id) {
         }
         return 0;
     }
-    
-    REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location_id", location_id);
-    REPY_FN_EVAL_CACHE_BOOL(
-        py_rando_get_location_has_local_item,
-        "recomp_data.ctx.locations_info[location_id].player == recomp_data.ctx.slot",
-        is_local
-    );
-    REPY_FN_CLEANUP;
-    return is_local;
+
+    return rando_get_location_item_player_id(location_id) == rando_get_own_slot_id();
 }
 
 u32 rando_get_item_at_location(u32 location_id) {
@@ -97,15 +89,24 @@ u32 rando_has_item(u32 item_id) {
 
 // u32 rando_has_item_async(u32 item_id);
 
+// this fully assumes that the player's slot id cannot be 0
+u32 own_slot_id;
 u32 rando_get_own_slot_id() {
-    REPY_FN_SETUP_RANDO;
-    REPY_FN_EVAL_CACHE_U32(
-        py_rando_get_own_slot_id,
-        "recomp_data.ctx.slot",
-        slot
-    );
-    REPY_FN_CLEANUP;
-    return slot;
+    if (!own_slot_id) {
+        REPY_FN_SETUP_RANDO;
+        
+        REPY_FN_EVAL_CACHE_U32(
+            py_rando_get_own_slot_id,
+            "recomp_data.ctx.slot",
+            slot
+        );
+        
+        REPY_FN_CLEANUP;
+
+        own_slot_id = slot;
+    }
+    
+    return own_slot_id;
 }
 
 // might want a new system for this in the actual randomizers
