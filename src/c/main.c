@@ -3,6 +3,7 @@
 U32ValueHashmapHandle rando_location_item_map;
 U32ValueHashmapHandle rando_location_player_map;
 U32ValueHashmapHandle rando_location_flag_map;
+U32HashsetHandle rando_checked_locations;
 
 void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     // REPY_SetInterpreterAutoDisarm(rando_interp, true); // A hack fix until we have a proper shutdown event.
@@ -62,6 +63,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     rando_location_item_map = recomputil_create_u32_value_hashmap();
     rando_location_player_map = recomputil_create_u32_value_hashmap();
     rando_location_flag_map = recomputil_create_u32_value_hashmap();
+    rando_checked_locations = recomputil_create_u32_hashset();
     
     REPY_FN_CLEANUP;
 }
@@ -92,7 +94,7 @@ bool rando_init(char* address, char* player_name, char* password) {
 bool glue_already_populated;
 
 // this needs to run after scouting is completed to have the info to store
-void rando_populate() {
+void rando_populate_locations() {
     if (glue_already_populated) return;
 
     REPY_FN_SETUP_RANDO;
@@ -126,4 +128,32 @@ void rando_populate() {
     REPY_FN_CLEANUP;
 
     glue_already_populated = true;
+}
+
+// TODO: combine above with this
+void rando_update_cache() {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_EVAL_CACHE_BOOL(
+        py_rando_needs_update,
+        "recomp_data.ctx.recomp_needs_updating",
+        should_update
+    );
+
+    if (!should_update) {
+        REPY_FN_CLEANUP;
+        return;
+    }
+
+    REPY_FN_EXEC_CACHE(
+        py_rando_prepare_cache_for_checked,
+        "new_checked = recomp_data.ctx.checked_locations.difference(recomp_data.ctx.last_known_checked)\n"
+        "recomp_data.ctx.last_known_checked = recomp_data.ctx.checked_locations\n"
+    );
+
+    REPY_FN_FOREACH_CACHE(py_rando_cache_locations, "new_location_checked", "new_checked") {
+        recomputil_u32_hashset_insert(rando_checked_locations, REPY_FN_GET_U32("new_location_checked"));
+    }
+
+    REPY_FN_CLEANUP;
 }

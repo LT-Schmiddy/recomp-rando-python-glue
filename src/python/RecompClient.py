@@ -23,6 +23,8 @@ class RecompContext(CommonContext):
         self.slot_data = dict()
         self.deathlink_enabled = False
         self.deathlink_pending = False
+        self.recomp_needs_updating = False
+        self.last_known_checked = set()
         
     # TODO: actually handle this lol
     async def server_auth(self, password_requested: bool = False):
@@ -43,8 +45,12 @@ class RecompContext(CommonContext):
     def on_package(self, cmd: str, args: dict):
         if cmd == 'Connected':
             self.slot_data = args.get("slot_data", {})
+            self.recomp_needs_updating = True
         elif cmd == "RoomInfo":
             self.seed_name = args["seed_name"]
+        elif cmd == "RoomUpdate":
+            if "checked_locations" in args:
+                self.recomp_needs_updating = True
         elif cmd == 'ReceivedItems':
             # probably dumb to reset the list every time
             self.recieved_item_ids = []

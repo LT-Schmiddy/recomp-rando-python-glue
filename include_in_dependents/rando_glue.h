@@ -9,10 +9,12 @@ REPY_EXTERN_SUBINTERPRETER(rando_interp);
 extern U32ValueHashmapHandle rando_location_item_map;
 extern U32ValueHashmapHandle rando_location_player_map;
 extern U32ValueHashmapHandle rando_location_flag_map;
+extern U32HashsetHandle rando_checked_locations;
 
 void RandoGlue_Init(char* mod_id, char* ap_game_name);
 bool rando_init(char* address, char* player_name, char* password);
-void rando_populate();
+void rando_populate_locations();
+void rando_update_cache();
 
 bool rando_location_is_checked(u32 location_id);
 // bool rando_location_is_checked_async(u32 location_id);
