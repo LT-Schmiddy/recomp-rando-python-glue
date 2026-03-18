@@ -1,11 +1,15 @@
 #ifndef __RANDO_GLUE_MAIN__
 #define __RANDO_GLUE_MAIN__
 #include "repy_api.h"
+#include "recompdata.h"
 
 #include "PR/ultratypes.h"
 #define bool    u32
 
-#define DEBUG_GLUE 0
+#define false 0
+#define true 1
+
+#define DEBUG_GLUE false
 
 REPY_EXTERN_SUBINTERPRETER(rando_interp);
 

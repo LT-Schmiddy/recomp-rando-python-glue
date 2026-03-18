@@ -1,7 +1,11 @@
 #include "main.h"
 
+U32ValueHashmapHandle rando_location_item_map;
+U32ValueHashmapHandle rando_location_player_map;
+U32ValueHashmapHandle rando_location_flag_map;
+
 void RandoGlue_Init(char* mod_id, char* ap_game_name) { 
-    REPY_SetInterpreterAutoDisarm(rando_interp, 1); // A hack fix until we have a proper shutdown event.
+    REPY_SetInterpreterAutoDisarm(rando_interp, true); // A hack fix until we have a proper shutdown event.
     
     REPY_FN_SETUP_INTERP(rando_interp);
 
@@ -13,7 +17,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "queued_scouts = set()\n"
         "queued_locations = set()\n" // unsure if this will actually get used
         "last_location_sent = 0\n",
-        1
+        true
     );
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
     
@@ -52,12 +56,16 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     //     "ctx.password = ''\n"
     //     "RecompClient.connect_client()\n"
     // );
+
+    rando_location_item_map = recomputil_create_u32_value_hashmap();
+    rando_location_player_map = recomputil_create_u32_value_hashmap();
+    rando_location_flag_map = recomputil_create_u32_value_hashmap();
     
     REPY_FN_CLEANUP;
 }
 
 bool rando_init(char* address, char* player_name, char* password) {
-    REPY_FN_SETUP_INTERP(rando_interp);
+    REPY_FN_SETUP_RANDO;
 
     REPY_FN_SET_STR("ap_address", address);
     REPY_FN_SET_STR("ap_player_name", player_name);
@@ -65,8 +73,6 @@ bool rando_init(char* address, char* player_name, char* password) {
     
     REPY_FN_EXEC_CACHE(
         rando_connect,
-        "import RecompClient\n"
-        "import recomp_data\n"
         "import time\n"
         "ctx = recomp_data.ctx\n"
         "ctx.server_address = 'archipelago://' + ap_address\n"
@@ -79,4 +85,43 @@ bool rando_init(char* address, char* player_name, char* password) {
 
     REPY_FN_CLEANUP;
     return 1; // temp until failure to connect is handled correctly
+}
+
+bool glue_already_populated;
+
+// this needs to run after scouting is completed to have the info to store
+void rando_populate() {
+    if (glue_already_populated) return;
+
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_EVAL_CACHE_BOOL(
+        py_rando_locations_ready,
+        "recomp_data.ctx.locations_info != {}",
+        is_ready
+    );
+
+    if (!is_ready) {
+        REPY_FN_CLEANUP;
+        return;
+    }
+
+    REPY_FN_FOREACH_CACHE(py_rando_cache_locations, "location_info", "recomp_data.ctx.locations_info.items()") {
+        REPY_FN_EXEC_CACHE(
+            py_rando_cache_location_items,
+            "location, network_item = location_info\n"
+            "item = network_item.item\n"
+            "player = network_item.player\n"
+            "flags = network_item.flags\n"
+        );
+
+        u32 location = REPY_FN_GET_U32("location");
+        recomputil_u32_value_hashmap_insert(rando_location_item_map, location, REPY_FN_GET_U32("item"));
+        recomputil_u32_value_hashmap_insert(rando_location_player_map, location, REPY_FN_GET_U32("player"));
+        recomputil_u32_value_hashmap_insert(rando_location_flag_map, location, REPY_FN_GET_U32("flags"));
+    }
+
+    REPY_FN_CLEANUP;
+
+    glue_already_populated = true;
 }

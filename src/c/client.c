@@ -23,15 +23,9 @@ u32 rando_get_location_type(u32 location_id) { // could technically be a u8
         return 0;
     }
     
-    REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location_id", location_id);
-    REPY_FN_EVAL_CACHE_U32(
-        py_rando_get_location_type,
-        "recomp_data.ctx.locations_info[location_id].flags",
-        type
-    );
-    REPY_FN_CLEANUP;
-    return type;
+    u32 flags;
+    recomputil_u32_value_hashmap_get(rando_location_flag_map, location_id, &flags);
+    return flags;
 }
 
 bool rando_get_location_has_local_item(u32 location_id) {
@@ -61,14 +55,8 @@ u32 rando_get_item_at_location(u32 location_id) {
         return 0;
     }
     
-    REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location_id", location_id);
-    REPY_FN_EVAL_CACHE_U32(
-        py_rando_get_item_at_location,
-        "recomp_data.ctx.locations_info[location_id].item",
-        item_id
-    );
-    REPY_FN_CLEANUP;
+    u32 item_id;
+    recomputil_u32_value_hashmap_get(rando_location_item_map, location_id, &item_id);
     return item_id;
 }
 
@@ -239,14 +227,8 @@ u32 rando_get_location_item_player_id(u32 location_id) {
         return 0;
     }
 
-    REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location_id", location_id);
-    REPY_FN_EVAL_CACHE_U32(
-        py_rando_get_location_item_player,
-        "recomp_data.ctx.locations_info[location_id].player\n",
-        player_slot
-    );
-    REPY_FN_CLEANUP;
+    u32 player_slot;
+    recomputil_u32_value_hashmap_get(rando_location_player_map, location_id, &player_slot);
     return player_slot;
 }
 
@@ -331,15 +313,7 @@ void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, c
 }
 
 bool rando_location_exists(u32 location_id) {
-    REPY_FN_SETUP_RANDO;
-    REPY_FN_SET_U32("location_id", location_id);
-    REPY_FN_EVAL_CACHE_BOOL(
-        py_rando_location_exists,
-        "location_id in recomp_data.ctx.locations_info", // would server_locations make more sense?
-        exists
-    );
-    REPY_FN_CLEANUP;
-    return exists;
+    return recomputil_u32_value_hashmap_contains(rando_location_item_map, location_id);
 }
 
 // SCOUTS
