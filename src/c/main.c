@@ -68,7 +68,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     REPY_FN_CLEANUP;
 }
 
-bool rando_init(char* address, char* player_name, char* password) {
+bool rando_init(char* address, char* player_name, char* password, char** error_msg) {
     REPY_FN_SETUP_RANDO;
 
     REPY_FN_SET_STR("ap_address", address);
@@ -77,18 +77,24 @@ bool rando_init(char* address, char* player_name, char* password) {
     
     REPY_FN_EXEC_CACHE(
         rando_connect,
-        "import time\n"
         "ctx = recomp_data.ctx\n"
         "ctx.server_address = 'archipelago://' + ap_address\n"
         "ctx.username = ap_player_name\n"
         "ctx.password = ap_password\n"
         // "RecompClient.save_ap_connect(ap_address, ap_player_name, ap_password)\n"
-        "RecompClient.connect_client()\n"
-        "time.sleep(1)"
+        "RecompClient.connect_client()\n" // crashes on failed connection due to archipelago raising an error
+        "connected = RecompClient.wait_for_connection(5, 0.25)"
     );
 
+    bool connected = REPY_FN_GET_BOOL("connected");
+
+    if (!connected) {
+        (*error_msg) = REPY_FN_GET_STR("recomp_data.ctx.failed_reason");
+    }
+
     REPY_FN_CLEANUP;
-    return 1; // temp until failure to connect is handled correctly
+
+    return connected;
 }
 
 bool glue_already_populated;

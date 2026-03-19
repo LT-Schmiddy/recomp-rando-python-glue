@@ -12,7 +12,7 @@ extern U32ValueHashmapHandle rando_location_flag_map;
 extern U32HashsetHandle rando_checked_locations;
 
 void RandoGlue_Init(char* mod_id, char* ap_game_name);
-bool rando_init(char* address, char* player_name, char* password);
+bool rando_init(char* address, char* player_name, char* password, char** error_msg);
 void rando_populate_locations();
 void rando_update_cache();
 

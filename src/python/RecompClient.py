@@ -1,10 +1,11 @@
 import asyncio
+import time
+import typing
+from pathlib import Path
 
 import Utils
 import websockets
 import functools
-import typing
-from pathlib import Path
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
 from CommonClient import CommonContext, server_loop
 
@@ -15,10 +16,13 @@ from rando_async_controller import AsyncLoopThread
 class RecompContext(CommonContext):
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
-        self.autoreconnect_task = None # is this redundant?
         self.items_handling = 0b111 # allow for all items to come through/be processed
 
         self.recieved_item_ids: List[Any] = [] # mirrors items_received, but is only the item ids
+
+        self.connection_success = False
+        self.connection_failed = False
+        self.failed_reason = ""
 
         self.slot_data = dict()
         self.deathlink_enabled = False
@@ -34,6 +38,12 @@ class RecompContext(CommonContext):
 
         await self.get_username()
         await self.send_connect()
+
+    # lets the game know why the connection failed (no reconnect)
+    def handle_connection_loss(self, msg: str) -> None:
+        self.connection_failed = True
+        self.failed_reason = msg
+        super().handle_connection_loss(str)
 
     def is_connected(self) -> bool:
         return self.server and self.server.socket.open
@@ -56,6 +66,7 @@ class RecompContext(CommonContext):
     # custom package handling
     def on_package(self, cmd: str, args: dict):
         if cmd == 'Connected':
+            self.connection_success = True
             self.slot_data = args.get("slot_data", {})
             self.recomp_needs_updating = True
         elif cmd == "RoomInfo":
@@ -123,3 +134,21 @@ def get_ap_connect():
         connection_info.append("") # empty password
     
     return connection_info
+
+# TODO: clean up whole file later
+def wait_for_connection(timeout, period):
+    timeout_time = time.time() + timeout
+    ctx = recomp_data.ctx
+
+    while time.time() < timeout_time:
+        if ctx.connection_success:
+            return True
+        
+        elif ctx.connection_failed:
+            return False
+        
+        time.sleep(period)
+        
+    ctx.connection_failed = True
+    ctx.failed_reason = "Connection timed out."
+    return False
