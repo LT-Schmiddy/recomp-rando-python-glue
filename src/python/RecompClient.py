@@ -10,8 +10,10 @@ from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkI
 from CommonClient import CommonContext, server_loop
 
 import recomp_data
-
 from rando_async_controller import AsyncLoopThread
+
+async_thread = AsyncLoopThread()
+async_thread.start();
 
 class RecompContext(CommonContext):
     def __init__(self, server_address, password):
@@ -91,15 +93,14 @@ async def async_main():
     await ctx.shutdown()
 
 def connect_client(*args):    
+    global async_thread
     import colorama
 
     # use colorama to display colored text highlighting on windows
     colorama.just_fix_windows_console()
 
-    async_thread_loop = AsyncLoopThread()
-    async_thread_loop.start()
-    async_thread_loop.enqueue(async_main())
-    return async_thread_loop
+    async_thread.enqueue(async_main())
+    return async_thread
     # colorama.deinit()
 
 async def setup_ctx(game):
@@ -108,14 +109,12 @@ async def setup_ctx(game):
     recomp_data.ctx = ctx
 
 def run_async_task_once(async_func):
-    async_thread_loop = AsyncLoopThread()
-    async_thread_loop.start()
-    async_thread_loop.enqueue(async_func)
+    global async_thread
+    async_thread.enqueue(async_func)
 
 def run_async_task_and_wait_once(async_func):
-    async_thread_loop = AsyncLoopThread()
-    async_thread_loop.start()
-    async_thread_loop.enqueue(async_func).result()
+    global async_thread
+    async_thread.enqueue(async_func).result()
 
 # yes this still saves as "apconnect.txt" for the bit, even though a json would be better
 def save_ap_connect(address, player_name, password):
