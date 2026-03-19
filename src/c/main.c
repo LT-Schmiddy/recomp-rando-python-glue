@@ -83,13 +83,16 @@ bool rando_init(char* address, char* player_name, char* password, char** error_m
         "ctx.password = ap_password\n"
         // "RecompClient.save_ap_connect(ap_address, ap_player_name, ap_password)\n"
         "RecompClient.connect_client()\n" // crashes on failed connection due to archipelago raising an error
-        "connected = RecompClient.wait_for_connection(5, 0.25)"
+        "connected = RecompClient.wait_for_connection(5, 0.25)\n"
+        "fail_msg = recomp_data.ctx.failed_reason\n" // only if connection failed
     );
+
+    // TODO: write to fail_msg if its empty based on error as certain exceptions raise outside of where we currently check
 
     bool connected = REPY_FN_GET_BOOL("connected");
 
     if (!connected) {
-        (*error_msg) = REPY_FN_GET_STR("recomp_data.ctx.failed_reason");
+        (*error_msg) = REPY_FN_GET_STR("fail_msg");
     }
 
     REPY_FN_CLEANUP;
