@@ -145,14 +145,9 @@ void rando_update_cache() {
         return;
     }
 
-    REPY_FN_EXEC_CACHE(
-        py_rando_prepare_cache_for_checked,
-        "new_checked = recomp_data.ctx.checked_locations.difference(recomp_data.ctx.last_known_checked)\n"
-        "recomp_data.ctx.last_known_checked = recomp_data.ctx.checked_locations\n"
-    );
-
-    REPY_FN_FOREACH_CACHE(py_rando_cache_locations, "new_location_checked", "new_checked") {
-        recomputil_u32_hashset_insert(rando_checked_locations, REPY_FN_GET_U32("new_location_checked"));
+    // this assumes both the python and hashset implementations aren't bottlenecked by refilling these
+    REPY_FN_FOREACH_CACHE(py_rando_cache_locations, "location_checked", "recomp_data.ctx.local_checked") {
+        recomputil_u32_hashset_insert(rando_checked_locations, REPY_FN_GET_U32("location_checked"));
     }
 
     REPY_FN_CLEANUP;

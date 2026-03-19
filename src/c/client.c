@@ -2,7 +2,6 @@
 #include "rando_glue.h"
 
 bool rando_location_is_checked(u32 location_id) {
-    // uses checked_locations, which is server checked while locations_checked is in the client
     return recomputil_u32_hashset_contains(rando_checked_locations, location_id);
 }
 

@@ -24,7 +24,8 @@ class RecompContext(CommonContext):
         self.deathlink_enabled = False
         self.deathlink_pending = False
         self.recomp_needs_updating = False
-        self.last_known_checked = set()
+        self.local_checked = set()
+        # TODO: set self.locations_checked from file saving self.local_checked
         
     # TODO: actually handle this lol
     async def server_auth(self, password_requested: bool = False):
@@ -40,6 +41,17 @@ class RecompContext(CommonContext):
     def on_deathlink(self, data: typing.Dict[str, typing.Any]) -> None:
         self.deathlink_pending = True
         super().on_deathlink(data)
+
+    # override `check_locations` to save sent locations (make super later)
+    async def check_locations(self, locations: typing.Collection[int]) -> set[int]:
+        """Send new location checks to the server. Returns the set of actually new locations that were sent."""
+        self.recomp_needs_updating = True
+        self.local_checked |= set(locations)
+        
+        locations = set(locations) & self.missing_locations
+        if locations:
+            await self.send_msgs([{"cmd": 'LocationChecks', "locations": tuple(locations)}])
+        return locations
 
     # custom package handling
     def on_package(self, cmd: str, args: dict):
