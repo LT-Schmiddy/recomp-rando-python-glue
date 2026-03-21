@@ -1,13 +1,13 @@
 #include "main.h"
 #include "rando_glue.h"
 
-bool rando_location_is_checked(u32 location_id) {
+RECOMP_EXPORT bool rando_location_is_checked(u32 location_id) {
     return recomputil_u32_hashset_contains(rando_checked_locations, location_id);
 }
 
 // bool rando_location_is_checked_async(u32 location_id); // unneeded
 
-u32 rando_get_location_type(u32 location_id) { // could technically be a u8
+RECOMP_EXPORT u32 rando_get_location_type(u32 location_id) { // could technically be a u8
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
@@ -20,7 +20,7 @@ u32 rando_get_location_type(u32 location_id) { // could technically be a u8
     return flags;
 }
 
-bool rando_get_location_has_local_item(u32 location_id) {
+RECOMP_EXPORT bool rando_get_location_has_local_item(u32 location_id) {
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
@@ -31,7 +31,7 @@ bool rando_get_location_has_local_item(u32 location_id) {
     return rando_get_location_item_player_id(location_id) == rando_get_own_slot_id();
 }
 
-u32 rando_get_item_at_location(u32 location_id) {
+RECOMP_EXPORT u32 rando_get_item_at_location(u32 location_id) {
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
@@ -45,7 +45,7 @@ u32 rando_get_item_at_location(u32 location_id) {
 }
 
 // this would likely be better as an async function, queueing the locations to send on the update loop
-void rando_send_location(u32 location_id) {
+RECOMP_EXPORT void rando_send_location(u32 location_id) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location_id", location_id);
     REPY_FN_EXEC_CACHE(
@@ -57,7 +57,7 @@ void rando_send_location(u32 location_id) {
     REPY_FN_CLEANUP;
 }
 
-void rando_complete_goal() {
+RECOMP_EXPORT void rando_complete_goal() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_complete_goal,
@@ -67,7 +67,7 @@ void rando_complete_goal() {
     REPY_FN_CLEANUP;
 }
 
-u32 rando_has_item(u32 item_id) {
+RECOMP_EXPORT u32 rando_has_item(u32 item_id) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("item_id", item_id);
     REPY_FN_EVAL_CACHE_U32(
@@ -83,7 +83,7 @@ u32 rando_has_item(u32 item_id) {
 
 // this fully assumes that the player's slot id cannot be 0
 u32 own_slot_id;
-u32 rando_get_own_slot_id() {
+RECOMP_EXPORT u32 rando_get_own_slot_id() {
     if (!own_slot_id) {
         REPY_FN_SETUP_RANDO;
         
@@ -102,7 +102,7 @@ u32 rando_get_own_slot_id() {
 }
 
 // might want a new system for this in the actual randomizers
-u32 rando_get_items_size() {
+RECOMP_EXPORT u32 rando_get_items_size() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EVAL_CACHE_U32(
         py_rando_get_items_size,
@@ -114,7 +114,7 @@ u32 rando_get_items_size() {
 }
 
 // same as above, this is dumb lol
-u32 rando_get_item(u32 items_index) {
+RECOMP_EXPORT u32 rando_get_item(u32 items_index) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("index", items_index);
     REPY_FN_EVAL_CACHE_U32(
@@ -128,7 +128,7 @@ u32 rando_get_item(u32 items_index) {
 
 // okay i'm getting lost at this point
 // also i'm ripping this out in mm for something better because man.
-s32 rando_get_item_location(u32 items_index) {
+RECOMP_EXPORT s32 rando_get_item_location(u32 items_index) {
     if (items_index > rando_get_items_size()) {
         return 0;
     }
@@ -145,7 +145,7 @@ s32 rando_get_item_location(u32 items_index) {
 }
 
 // same as above, but this is actually used by other randos
-u32 rando_get_sending_player(u32 items_index) {
+RECOMP_EXPORT u32 rando_get_sending_player(u32 items_index) {
     if (items_index > rando_get_items_size()) {
         return 0;
     }
@@ -162,7 +162,7 @@ u32 rando_get_sending_player(u32 items_index) {
 }
 
 // make this require a max string length
-void rando_get_item_name_from_id(u32 item_id, char** out_str) {
+RECOMP_EXPORT void rando_get_item_name_from_id(u32 item_id, char** out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("item_id", item_id);
     REPY_FN_EXEC_CACHE(
@@ -175,7 +175,7 @@ void rando_get_item_name_from_id(u32 item_id, char** out_str) {
 }
 
 // make this require a max string length (also don't like how this is)
-void rando_get_sending_player_name(u32 items_index, char** out_str) {
+RECOMP_EXPORT void rando_get_sending_player_name(u32 items_index, char** out_str) {
     if (items_index > rando_get_items_size()) {
         return;
     }
@@ -193,7 +193,7 @@ void rando_get_sending_player_name(u32 items_index, char** out_str) {
 }
 
 // make this require a max string length
-void rando_get_location_item_player(u32 location_id, char** out_str) {
+RECOMP_EXPORT void rando_get_location_item_player(u32 location_id, char** out_str) {
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
@@ -212,7 +212,7 @@ void rando_get_location_item_player(u32 location_id, char** out_str) {
     REPY_FN_CLEANUP;
 }
 
-u32 rando_get_location_item_player_id(u32 location_id) {
+RECOMP_EXPORT u32 rando_get_location_item_player_id(u32 location_id) {
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
@@ -226,7 +226,7 @@ u32 rando_get_location_item_player_id(u32 location_id) {
 }
 
 // make this require a max string length
-void rando_get_location_item_name(u32 location_id, char** out_str) {
+RECOMP_EXPORT void rando_get_location_item_name(u32 location_id, char** out_str) {
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
@@ -245,7 +245,7 @@ void rando_get_location_item_name(u32 location_id, char** out_str) {
     REPY_FN_CLEANUP;
 }
 
-u32 rando_get_last_location_sent() {
+RECOMP_EXPORT u32 rando_get_last_location_sent() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EVAL_CACHE_U32(
         py_rando_get_last_location_sent,
@@ -256,7 +256,7 @@ u32 rando_get_last_location_sent() {
     return location_id;
 }
 
-u32 rando_get_seed_name(char** seed_name_out, u32 buffer_size) {
+RECOMP_EXPORT u32 rando_get_seed_name(char** seed_name_out, u32 buffer_size) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_seed_name,
@@ -268,7 +268,7 @@ u32 rando_get_seed_name(char** seed_name_out, u32 buffer_size) {
 }
 
 // make this require a max string length
-void rando_get_own_slot_name(char** out_str) {
+RECOMP_EXPORT void rando_get_own_slot_name(char** out_str) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_location_item_name,
@@ -278,7 +278,7 @@ void rando_get_own_slot_name(char** out_str) {
     REPY_FN_CLEANUP;
 }
 
-void rando_get_saved_apconnect(u8* save_dir, char** address, char** player_name, char** password) {
+RECOMP_EXPORT void rando_get_saved_apconnect(u8* save_dir, char** address, char** player_name, char** password) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_saved_apconnect,
@@ -293,7 +293,7 @@ void rando_get_saved_apconnect(u8* save_dir, char** address, char** player_name,
     REPY_FN_CLEANUP;
 }
 
-void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password) {
+RECOMP_EXPORT void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, char* password) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_STR("address", address);
     REPY_FN_SET_STR("player_name", player_name);
@@ -305,13 +305,13 @@ void rando_set_saved_apconnect(u8* save_dir, char* address, char* player_name, c
     REPY_FN_CLEANUP;
 }
 
-bool rando_location_exists(u32 location_id) {
+RECOMP_EXPORT bool rando_location_exists(u32 location_id) {
     return recomputil_u32_value_hashmap_contains(rando_location_item_map, location_id);
 }
 
 // SCOUTS
 
-void rando_queue_scout(u32 location) {
+RECOMP_EXPORT void rando_queue_scout(u32 location) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location", location);
     REPY_FN_EXEC_CACHE(
@@ -321,7 +321,7 @@ void rando_queue_scout(u32 location) {
     REPY_FN_CLEANUP;
 }
 
-void rando_queue_scouts_all() {
+RECOMP_EXPORT void rando_queue_scouts_all() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_queue_scouts_all,
@@ -330,7 +330,7 @@ void rando_queue_scouts_all() {
     REPY_FN_CLEANUP;
 }
 
-void rando_remove_queued_scout(u32 location) {
+RECOMP_EXPORT void rando_remove_queued_scout(u32 location) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location", location);
     REPY_FN_EXEC_CACHE(
@@ -340,7 +340,7 @@ void rando_remove_queued_scout(u32 location) {
     REPY_FN_CLEANUP;
 }
 
-void rando_send_queued_scouts(int hint) {
+RECOMP_EXPORT void rando_send_queued_scouts(int hint) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("hint", hint);
     REPY_FN_EXEC_CACHE(
@@ -354,7 +354,7 @@ void rando_send_queued_scouts(int hint) {
     REPY_FN_CLEANUP;
 }
 
-void rando_broadcast_location_hint(u32 location_id) {
+RECOMP_EXPORT void rando_broadcast_location_hint(u32 location_id) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location", location_id);
     REPY_FN_EXEC_CACHE(
@@ -369,7 +369,7 @@ void rando_broadcast_location_hint(u32 location_id) {
 
 // SLOTDATA
 
-u32 rando_get_slotdata_u32(char* key) {
+RECOMP_EXPORT u32 rando_get_slotdata_u32(char* key) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_STR("key", key);
     REPY_FN_EVAL_CACHE_U32(
@@ -392,7 +392,7 @@ u32 rando_get_slotdata_u32(char* key) {
 // datastorage functions will automatically add a prefix of "game_team_slot_value"
 
 // copied from DKR, which copied from BT - i don't know why the values are turned into hex strings
-void rando_datastorage_replace_u32(char* key, u32 value) {
+RECOMP_EXPORT void rando_datastorage_replace_u32(char* key, u32 value) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_STR("key", key);
     REPY_FN_SET_U32("value", value);
@@ -414,7 +414,7 @@ void rando_datastorage_replace_u32(char* key, u32 value) {
     REPY_FN_CLEANUP;
 }
 
-void rando_datastorage_replace_str(char* key, char* value) {
+RECOMP_EXPORT void rando_datastorage_replace_str(char* key, char* value) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_STR("key", key);
     REPY_FN_SET_STR("value", value);
@@ -438,7 +438,7 @@ void rando_datastorage_replace_str(char* key, char* value) {
 
 // DEATHLINK
 
-void rando_send_death_link() {
+RECOMP_EXPORT void rando_send_death_link() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_send_death_link,
@@ -448,7 +448,7 @@ void rando_send_death_link() {
     REPY_FN_CLEANUP;
 }
 
-void rando_send_death_link_msg(char* death_msg) {
+RECOMP_EXPORT void rando_send_death_link_msg(char* death_msg) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_STR("death_msg", death_msg);
     REPY_FN_EXEC_CACHE(
@@ -459,7 +459,7 @@ void rando_send_death_link_msg(char* death_msg) {
     REPY_FN_CLEANUP;
 }
 
-bool rando_get_death_link_pending() {
+RECOMP_EXPORT bool rando_get_death_link_pending() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EVAL_CACHE_BOOL(
         py_rando_get_death_link_pending,
@@ -470,7 +470,7 @@ bool rando_get_death_link_pending() {
     return pending;
 }
 
-void rando_reset_death_link_pending() {
+RECOMP_EXPORT void rando_reset_death_link_pending() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_reset_death_link_pending,
@@ -479,7 +479,7 @@ void rando_reset_death_link_pending() {
     REPY_FN_CLEANUP;
 }
 
-bool rando_get_death_link_enabled() {
+RECOMP_EXPORT bool rando_get_death_link_enabled() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EVAL_CACHE_BOOL(
         py_rando_get_death_link_pending,
@@ -490,7 +490,7 @@ bool rando_get_death_link_enabled() {
     return enabled;
 }
 
-void rando_toggle_death_link(bool toggle) {
+RECOMP_EXPORT void rando_toggle_death_link(bool toggle) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_BOOL("toggle", toggle);
     REPY_FN_EXEC_CACHE(
@@ -502,7 +502,7 @@ void rando_toggle_death_link(bool toggle) {
 }
 
 // this should hash the seed name + slot number into a random seed either the randomizer or other mods can use
-u32 rando_get_random_seed() {
+RECOMP_EXPORT u32 rando_get_random_seed() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_random_seed,
