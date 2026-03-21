@@ -516,9 +516,5 @@ RECOMP_EXPORT u32 rando_get_random_seed() {
 }
 
 // everything below is mm specific slotdata stuff that will need to be altered in the mm repo
-// bool rando_advanced_shops_enabled(); // not used?
-// u32 rando_damage_multiplier(); modified manually
-// s16 rando_get_shop_price(u32 shop_item_id); // game specific
-
 // bool rando_get_game_is_oot(u32 player_id);
 // bool rando_get_game_is_ww(u32 player_id);
