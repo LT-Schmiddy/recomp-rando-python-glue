@@ -53,6 +53,9 @@ class RecompContext(CommonContext):
     def on_deathlink(self, data: typing.Dict[str, typing.Any]) -> None:
         self.deathlink_pending = True
         super().on_deathlink(data)
+    
+    async def complete_goal(self) -> None:
+        await self.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
 
     # override `check_locations` to save sent locations (make super later)
     async def check_locations(self, locations: typing.Collection[int]) -> set[int]:

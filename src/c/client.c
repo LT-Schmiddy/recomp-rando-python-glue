@@ -61,8 +61,8 @@ RECOMP_EXPORT void rando_complete_goal() {
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_complete_goal,
-        "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'StatusUpdate', 'status': ClientStatus.CLIENT_GOAL}])\n"
-        "RecompClient.run_async_task_and_wait_once(msg_func)\n"
+        "goal_func = recomp_data.ctx.complete_goal()\n"
+        "RecompClient.run_async_task_and_wait_once(goal_func)\n"
     );
     REPY_FN_CLEANUP;
 }
