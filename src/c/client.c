@@ -508,10 +508,11 @@ RECOMP_EXPORT u32 rando_get_random_seed() {
         py_rando_get_random_seed,
         "import hashlib\n"
         "ctx = recomp_data.ctx\n"
-        "hashed_seed = int.from_bytes(hashlib.sha256((ctx.seed_name + ctx.slot).encode('utf-8')))\n"
+        "hashed_seed = int(hashlib.sha256((f'{ctx.seed_name}{ctx.slot}').encode('utf-8')).hexdigest(), 16) % 0xFFFFFFFF\n"
     );
+    u32 seed = REPY_FN_GET_U32("hashed_seed");
     REPY_FN_CLEANUP;
-    return REPY_FN_GET_U32("hashed_seed");
+    return seed;
 }
 
 // everything below is mm specific slotdata stuff that will need to be altered in the mm repo
