@@ -2,20 +2,13 @@ import os
 from pathlib import Path
 
 root_dir = Path(__file__).parent
-pyyaml_src_dir = root_dir.joinpath("./libs/pyyaml/lib/yaml")
-typing_extensions_src_dir = root_dir.joinpath("./libs/typing_extensions/src")
-websockets_src_dir = root_dir.joinpath("./libs/websockets/src/websockets")
 archipelago_src_dir = root_dir.joinpath("./libs/Archipelago")
-colorama_src_dir = root_dir.joinpath("./libs/colorama/colorama")
 local_src_dir = root_dir.joinpath("./src/python")
 
 nrm_archipelago_dir = Path(".")
 
 include_python_files: dict[Path, Path] = {
     # Including single files
-    # Modules
-    Path("schema.py"): root_dir.joinpath("./libs/schema/schema.py"),
-    Path("typing_extensions.py"): typing_extensions_src_dir.joinpath("typing_extensions.py"),
 
     # Archipelago Base Files
     nrm_archipelago_dir.joinpath("BaseClasses.py"): archipelago_src_dir.joinpath("./BaseClasses.py"),
@@ -57,7 +50,4 @@ def populate_file_injection(injections: dict[Path, Path], inject_root: Path, sea
             populate_file_injection(injections, inject_path, file_path)
 
 # Including entire directories            
-populate_file_injection(include_python_files, Path("yaml"), pyyaml_src_dir)
-populate_file_injection(include_python_files, Path("websockets"), websockets_src_dir)
-populate_file_injection(include_python_files, Path("colorama"), colorama_src_dir)
 populate_file_injection(include_python_files, Path("."), local_src_dir)
