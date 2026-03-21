@@ -387,7 +387,54 @@ u32 rando_get_slotdata_u32(char* key) {
 // void rando_access_slotdata_raw_array_o32(u32* in_handle_ptr, u32 index, u32* out_handle_ptr);
 // void rando_access_slotdata_raw_dict_o32(u32* in_handle_ptr, const char* key, u32* out_handle_ptr);
 
-// bool rando_init(char* address, char* player_name, char* password);
+// DATASTORAGE
+
+// datastorage functions will automatically add a prefix of "game_team_slot_value"
+
+// copied from DKR, which copied from BT - i don't know why the values are turned into hex strings
+void rando_datastorage_replace_u32(char* key, u32 value) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_STR("key", key);
+    REPY_FN_SET_U32("value", value);
+    REPY_FN_EXEC_CACHE(
+        py_rando_datastorage_replace_u32,
+        "game = recomp_data.ctx.game.replace(' ', '_')\n"
+        "slot = recomp_data.ctx.slot\n"
+        "team = recomp_data.ctx.team\n"
+        "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'Set',\n"
+        "                                       'key': f'{game}_{team}_{slot}_{key}',\n"
+        "                                       'default': hex(0),\n"
+        "                                       'want_reply': False,\n"
+        "                                       'operations': [{\n"
+        "                                           'operation': 'replace',\n"
+        "                                           'value': hex(value)}]\n"
+        "                                       }])\n"
+        "RecompClient.run_async_task_once(msg_func)\n"
+    );
+    REPY_FN_CLEANUP;
+}
+
+void rando_datastorage_replace_str(char* key, char* value) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_STR("key", key);
+    REPY_FN_SET_STR("value", value);
+    REPY_FN_EXEC_CACHE(
+        py_rando_datastorage_replace_str,
+        "game = recomp_data.ctx.game.replace(' ', '_')\n"
+        "slot = recomp_data.ctx.slot\n"
+        "team = recomp_data.ctx.team\n"
+        "msg_func = recomp_data.ctx.send_msgs([{'cmd': 'Set',\n"
+        "                                       'key': f'{game}_{team}_{slot}_{key}',\n"
+        "                                       'default': '',\n"
+        "                                       'want_reply': False,\n"
+        "                                       'operations': [{\n"
+        "                                           'operation': 'replace',\n"
+        "                                           'value': value}]\n"
+        "                                       }])\n"
+        "RecompClient.run_async_task_once(msg_func)\n"
+    );
+    REPY_FN_CLEANUP;
+}
 
 // DEATHLINK
 

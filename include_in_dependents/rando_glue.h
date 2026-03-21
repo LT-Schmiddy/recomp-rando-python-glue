@@ -58,7 +58,9 @@ u32 rando_get_slotdata_u32(char* key);
 // void rando_access_slotdata_raw_array_o32(u32* in_handle_ptr, u32 index, u32* out_handle_ptr);
 // void rando_access_slotdata_raw_dict_o32(u32* in_handle_ptr, const char* key, u32* out_handle_ptr);
 
-// bool rando_init(char* address, char* player_name, char* password);
+// datastorage
+void rando_datastorage_replace_u32(char* key, u32 value);
+void rando_datastorage_replace_str(char* key, char* value);
 
 // deathlink
 void rando_send_death_link();
