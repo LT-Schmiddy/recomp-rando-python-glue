@@ -119,6 +119,7 @@ void rando_populate_locations() {
         return;
     }
 
+    // note, an error occurs when the location is bigger than 32 bits
     REPY_FN_FOREACH_CACHE(py_rando_cache_locations, "location_info", "recomp_data.ctx.locations_info.items()") {
         REPY_FN_EXEC_CACHE(
             py_rando_cache_location_items,
@@ -158,6 +159,11 @@ void rando_update_cache() {
     REPY_FN_FOREACH_CACHE(py_rando_cache_locations, "location_checked", "recomp_data.ctx.local_checked") {
         recomputil_u32_hashset_insert(rando_checked_locations, REPY_FN_GET_U32("location_checked"));
     }
+
+    REPY_FN_EXEC_CACHE(
+        py_rando_no_longer_needs_update,
+        "recomp_data.ctx.recomp_needs_updating = False"
+    );
 
     REPY_FN_CLEANUP;
 }
