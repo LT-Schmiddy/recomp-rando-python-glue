@@ -239,7 +239,8 @@ RECOMP_EXPORT void rando_get_location_item_name(u32 location_id, char** out_str)
     REPY_FN_EXEC_CACHE(
         py_rando_get_location_item_name,
         "item_id = recomp_data.ctx.locations_info[location_id].item\n"
-        "item_name = recomp_data.ctx.item_names.lookup_in_game(item_id)"
+        "slot = recomp_data.ctx.locations_info[location_id].player\n"
+        "item_name = recomp_data.ctx.item_names.lookup_in_slot(item_id, slot)"
     );
     (*out_str) = REPY_FN_GET_STR("item_name");
     REPY_FN_CLEANUP;
