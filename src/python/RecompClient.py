@@ -62,6 +62,7 @@ class RecompContext(CommonContext):
         """Send new location checks to the server. Returns the set of actually new locations that were sent."""
         self.recomp_needs_updating = True
         self.local_checked |= set(locations)
+        self.locations_checked |= set(locations) # just in case we need to resend these after a disconnect(?)
         
         locations = set(locations) & self.missing_locations
         if locations:
@@ -74,11 +75,15 @@ class RecompContext(CommonContext):
             self.connection_success = True
             self.slot_data = args.get("slot_data", {})
             self.recomp_needs_updating = True
+            self.locations_checked |= self.checked_locations # just in case(?)
+            self.local_checked |= self.checked_locations
         elif cmd == "RoomInfo":
             self.seed_name = args["seed_name"]
         elif cmd == "RoomUpdate":
+            # maybe this could be used to show notifications for items collected by other players on the same slot
             if "checked_locations" in args:
                 self.recomp_needs_updating = True
+                self.local_checked |= self.checked_locations
         elif cmd == 'ReceivedItems':
             # probably dumb to reset the list every time
             self.recieved_item_ids = []
