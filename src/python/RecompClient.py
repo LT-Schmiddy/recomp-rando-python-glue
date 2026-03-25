@@ -146,6 +146,7 @@ def get_ap_connect():
 def wait_for_connection(timeout, period):
     timeout_time = time.time() + timeout
     ctx = recomp_data.ctx
+    ctx.connection_failed = False
 
     while time.time() < timeout_time:
         if ctx.connection_success:
