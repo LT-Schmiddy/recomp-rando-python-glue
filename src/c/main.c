@@ -124,7 +124,7 @@ void rando_populate_locations() {
         REPY_FN_EXEC_CACHE(
             py_rando_cache_location_items,
             "location, network_item = location_info\n"
-            "item = network_item.item\n"
+            "item = network_item.item & 0xFFFFFFFF\n" // hack fix for items being bigger than 32 bits (recomp items shouldn't be)
             "player = network_item.player\n"
             "flags = network_item.flags\n"
         );
