@@ -166,3 +166,15 @@ void rando_update_cache() {
 
     REPY_FN_CLEANUP;
 }
+
+// should only run when the game is saved
+void rando_save_current_state() {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_EXEC_CACHE(
+        py_rando_save_current_state,
+        "RecompClient.save_current_state()"
+    );
+
+    REPY_FN_CLEANUP;
+}

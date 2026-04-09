@@ -21,6 +21,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name);
 bool rando_init(char* address, char* player_name, char* password, char** error_msg);
 void rando_populate_locations();
 void rando_update_cache();
+void rando_save_current_state();
 
 bool rando_location_is_checked(u32 location_id);
 // bool rando_location_is_checked_async(u32 location_id);
