@@ -15,6 +15,7 @@ extern U32ValueHashmapHandle rando_location_item_map;
 extern U32ValueHashmapHandle rando_location_player_map;
 extern U32ValueHashmapHandle rando_location_flag_map;
 extern U32HashsetHandle rando_checked_locations;
+extern bool randoDataInitialized;
 
 void RandoGlue_Init(char* mod_id, char* ap_game_name);
 bool rando_init(char* address, char* player_name, char* password, char** error_msg);

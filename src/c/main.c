@@ -35,7 +35,6 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "mod_data_path = Path(mods_folder).joinpath('..', 'mod_data', recomp_mod_id).resolve()\n"
         "mod_data_path.mkdir(parents=True, exist_ok=True)\n"
         "mod_data_path.joinpath('Archipelago', 'local', 'Players').mkdir(parents=True, exist_ok=True)\n" // need to make directories beforehand
-        "print(mod_data_path)"
     );
 
     // REPY_SetAttrCStr(data_module, "mod_data_path", REPY_MakeSUH(REPY_FN_GET("mod_data_path")));
@@ -100,11 +99,11 @@ bool rando_init(char* address, char* player_name, char* password, char** error_m
     return connected;
 }
 
-bool glue_already_populated;
+bool randoDataInitialized;
 
 // this needs to run after scouting is completed to have the info to store
 void rando_populate_locations() {
-    if (glue_already_populated) return;
+    if (randoDataInitialized) return;
 
     REPY_FN_SETUP_RANDO;
 
@@ -137,7 +136,7 @@ void rando_populate_locations() {
 
     REPY_FN_CLEANUP;
 
-    glue_already_populated = true;
+    randoDataInitialized = true;
 }
 
 // TODO: combine above with this
