@@ -20,7 +20,7 @@ class RecompContext(CommonContext):
         super().__init__(server_address, password)
         self.items_handling = 0b111 # allow for all items to come through/be processed
 
-        self.recieved_item_ids: List[Any] = [] # mirrors items_received, but is only the item ids
+        self.received_item_ids: List[int] = [] # mirrors items_received, but is only the item ids
 
         self.connection_success = False
         self.connection_failed = False
@@ -86,9 +86,9 @@ class RecompContext(CommonContext):
                 self.local_checked |= self.checked_locations
         elif cmd == 'ReceivedItems':
             # probably dumb to reset the list every time
-            self.recieved_item_ids = []
+            self.received_item_ids = []
             for item in self.items_received:
-                self.recieved_item_ids.append(item.item)
+                self.received_item_ids.append(item.item)
 
 # client context should be set up before this is called
 async def async_main():

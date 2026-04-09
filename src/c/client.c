@@ -72,7 +72,7 @@ RECOMP_EXPORT u32 rando_has_item(u32 item_id) {
     REPY_FN_SET_U32("item_id", item_id);
     REPY_FN_EVAL_CACHE_U32(
         py_rando_has_item, 
-        "recomp_data.ctx.recieved_item_ids.count(item_id)",
+        "recomp_data.ctx.received_item_ids.count(item_id)",
         item_count
     );
     REPY_FN_CLEANUP;
