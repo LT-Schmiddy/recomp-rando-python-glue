@@ -173,7 +173,7 @@ void rando_save_current_state() {
 
     REPY_FN_EXEC_CACHE(
         py_rando_save_current_state,
-        "RecompClient.save_current_state()"
+        "rando_saves.save_current_state()"
     );
 
     REPY_FN_CLEANUP;

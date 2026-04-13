@@ -283,7 +283,7 @@ RECOMP_EXPORT void rando_get_saved_apconnect(u8* save_dir, char** address, char*
     REPY_FN_SETUP_RANDO;
     REPY_FN_EXEC_CACHE(
         py_rando_get_saved_apconnect,
-        "connection_info = RecompClient.get_ap_connect()\n"
+        "connection_info = rando_saves.get_ap_connect()\n"
         "address = connection_info[0]\n"
         "player_name = connection_info[1]\n"
         "password = connection_info[2]\n"
@@ -301,7 +301,7 @@ RECOMP_EXPORT void rando_set_saved_apconnect(u8* save_dir, char* address, char* 
     REPY_FN_SET_STR("password", password);
     REPY_FN_EXEC_CACHE(
         py_rando_set_saved_apconnect,
-        "RecompClient.save_ap_connect(address, player_name, password)\n"
+        "rando_saves.save_ap_connect(address, player_name, password)\n"
     );
     REPY_FN_CLEANUP;
 }
