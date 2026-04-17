@@ -1,5 +1,7 @@
 #include "main.h"
 
+REPY_InterpreterIndex rando_interp = REPY_MAIN_INTERPRETER;
+
 U32ValueHashmapHandle rando_location_item_map;
 U32ValueHashmapHandle rando_location_player_map;
 U32ValueHashmapHandle rando_location_flag_map;
