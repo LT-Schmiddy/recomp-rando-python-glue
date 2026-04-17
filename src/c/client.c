@@ -1,6 +1,17 @@
 #include "main.h"
 #include "rando_glue.h"
 
+RECOMP_EXPORT bool rando_is_connected() {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_EVAL_CACHE_BOOL(
+        py_rando_is_connected,
+        "recomp_data.ctx.is_connected()",
+        connected
+    );
+    REPY_FN_CLEANUP;
+    return connected;
+}
+
 RECOMP_EXPORT bool rando_location_is_checked(u32 location_id) {
     return recomputil_u32_hashset_contains(rando_checked_locations, location_id);
 }
