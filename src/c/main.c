@@ -8,7 +8,7 @@ U32ValueHashmapHandle rando_location_player_map;
 U32ValueHashmapHandle rando_location_flag_map;
 U32HashsetHandle rando_checked_locations;
 
-REPY_ON_POST_INIT void RandoGlue_Init(char* mod_id, char* ap_game_name) {
+void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     // REPY_SetInterpreterAutoDisarm(rando_interp, true); // A hack fix until we have a proper shutdown event.    
     REPY_FN_SETUP_INTERP(rando_interp);
 
