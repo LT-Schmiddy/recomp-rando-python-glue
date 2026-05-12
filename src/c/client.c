@@ -203,12 +203,22 @@ RECOMP_EXPORT void rando_get_sending_player_name(u32 items_index, char** out_str
     REPY_FN_CLEANUP;
 }
 
+// blank string helper function
+void rando_set_blank_str(char** out_str) {
+    // Allocating a buffer for the string on the heap.
+    // Empty string, so the buffer only needs to be one byte.
+    (*out_str) = recomp_alloc(sizeof(char) * 1);
+    // Setting the only character in the string to be the null-terminator.
+    (*out_str)[0] = 0;
+}
+
 // make this require a max string length
 RECOMP_EXPORT void rando_get_location_item_player(u32 location_id, char** out_str) {
     if (!rando_location_exists(location_id)) {
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
         }
+        rando_set_blank_str(out_str);
         return;
     }
     
@@ -242,6 +252,7 @@ RECOMP_EXPORT void rando_get_location_item_name(u32 location_id, char** out_str)
         if (DEBUG_GLUE) {
             recomp_printf("location 0x%06X does not exist in %s\n", location_id, __func__);
         }
+        rando_set_blank_str(out_str);
         return;
     }
     
