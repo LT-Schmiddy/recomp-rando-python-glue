@@ -17,6 +17,6 @@ REPY_EXTERN_SUBINTERPRETER(rando_interp);
     REPY_FN_SETUP_INTERP(rando_interp); \
     REPY_FN_IMPORT("recomp_data"); \
     REPY_FN_IMPORT("RecompClient"); \
-    REPY_FN_IMPORT("rando_saves"); \
+    REPY_FN_IMPORT("rando_saves");
 
 #endif
