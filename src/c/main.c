@@ -90,7 +90,12 @@ bool rando_init(char* address, char* player_name, char* password, char** error_m
 
     bool connected = REPY_FN_GET_BOOL("connected");
 
-    if (!connected) {
+    if (connected) {
+        REPY_FN_EXEC_CACHE(
+            py_rando_load_saved_state,
+            "rando_saves.load_saved_state()"
+        );
+    } else {
         (*error_msg) = REPY_FN_GET_STR("fail_msg");
     }
 
@@ -168,12 +173,14 @@ void rando_update_cache() {
 }
 
 // should only run when the game is saved
-void rando_save_current_state() {
+void rando_save_current_state(u8 save_slot) {
     REPY_FN_SETUP_RANDO;
+
+    REPY_FN_SET_U8("save_slot", save_slot);
 
     REPY_FN_EXEC_CACHE(
         py_rando_save_current_state,
-        "rando_saves.save_current_state()"
+        "rando_saves.save_current_state(save_slot)"
     );
 
     REPY_FN_CLEANUP;

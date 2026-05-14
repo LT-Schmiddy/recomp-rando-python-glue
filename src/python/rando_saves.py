@@ -34,28 +34,32 @@ def get_ap_connect():
 
 # SAVES
 
-def save_current_state():
+def save_current_state(slot = 0):
     ctx = recomp_data.ctx
     data_path = Path(recomp_data.mod_data_path).joinpath("save_data")
     data_path.mkdir(parents=True, exist_ok=True)
     file_name = f"multi_{ctx.seed_name}_{ctx.player_names[ctx.slot]}.json" # TODO: account for solo
     
-    save_data = {
+    # fill blank slots with dummy data
+    while len(ctx.save_data) <= slot:
+        blank_save_data = {
+            "checked_locations": set(),
+            "received_items": []
+        }
+        ctx.save_data.append(blank_save_data)
+
+    ctx.save_data[slot] = {
         "checked_locations": ctx.local_checked,
         "received_items": [item._asdict() for item in ctx.local_received]
     }
 
     with open(data_path.joinpath(file_name), "w") as f:
-        f.write(json.dumps(save_data, default=list, indent=4)) # dumb thing but i don't like how lists look in json lol
+        f.write(json.dumps(ctx.save_data, default=list, indent=4)) # dumb thing but i don't like how lists look in json lol
 
-async def load_saved_state():
+async def load_saved_state_from_slot(slot = 0):
     try:
         ctx = recomp_data.ctx
-        data_path = Path(recomp_data.mod_data_path).joinpath("save_data")
-        file_name = f"multi_{ctx.seed_name}_{ctx.player_names[ctx.slot]}.json" # TODO: account for solo
-
-        with open(data_path.joinpath(file_name), "r") as f:
-            saved_data = json.load(f)
+        saved_data = ctx.save_data[slot]
         
         checked_locations = set(saved_data["checked_locations"])
         received_items = [NetworkItem(item["item"], item["location"], item["player"], item["flags"])
@@ -64,6 +68,20 @@ async def load_saved_state():
         ctx.local_checked |= checked_locations
         ctx.local_received = received_items
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(ctx.locations_checked)}]) # send locations checked offline
+    except Exception as e:
+        print("failed", e)
+        pass
+
+def load_saved_state():
+    try:
+        ctx = recomp_data.ctx
+        data_path = Path(recomp_data.mod_data_path).joinpath("save_data")
+        file_name = f"multi_{ctx.seed_name}_{ctx.player_names[ctx.slot]}.json" # TODO: account for solo
+
+        with open(data_path.joinpath(file_name), "r") as f:
+            saved_data = json.load(f)
+        
+        ctx.save_data = saved_data
     except Exception as e:
         print("failed", e)
         pass

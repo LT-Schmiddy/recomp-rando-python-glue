@@ -22,6 +22,7 @@ class RecompContext(CommonContext):
         self.items_handling = 0b111 # allow for all items to come through/be processed
 
         self.received_item_ids: List[int] = [] # mirrors items_received, but is only the item ids
+        self.save_data = []
 
         self.connection_success = False
         self.connection_failed = False
