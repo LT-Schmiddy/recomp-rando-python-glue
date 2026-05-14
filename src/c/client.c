@@ -64,11 +64,17 @@ RECOMP_EXPORT void rando_send_location(u32 location_id) {
         "recomp_data.last_location_sent = location_id\n"
         "check_func = recomp_data.ctx.check_locations([location_id])\n"
         "RecompClient.run_async_task_and_wait_once(check_func)\n"
-        
-        // give self local items immediately (hack fix for incorrect item counts in text boxes?)
-        "if recomp_data.ctx.locations_info[location_id].player == recomp_data.ctx.slot:\n"
-        "   recomp_data.ctx.received_item_ids.append(recomp_data.ctx.locations_info[location_id].item)\n"
     );
+
+    // give self local items immediately (hack fix for incorrect item counts in text boxes?)
+    // this appends the local item to the "received_item_ids" array, which is what we use to determine item count
+    // > this works since "received_item_ids" gets reset every time items are recieved, but we might want a better solution in the future
+    if (rando_get_location_has_local_item(location_id)) {
+        REPY_FN_EXEC_CACHE(
+            py_rando_send_location_local_instant,
+            "recomp_data.ctx.received_item_ids.append(recomp_data.ctx.locations_info[location_id].item)"
+        );
+    }
     REPY_FN_CLEANUP;
 }
 
