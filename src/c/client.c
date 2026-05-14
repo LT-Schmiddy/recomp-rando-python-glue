@@ -64,6 +64,10 @@ RECOMP_EXPORT void rando_send_location(u32 location_id) {
         "recomp_data.last_location_sent = location_id\n"
         "check_func = recomp_data.ctx.check_locations([location_id])\n"
         "RecompClient.run_async_task_and_wait_once(check_func)\n"
+        
+        // give self local items immediately (hack fix for incorrect item counts in text boxes?)
+        "if recomp_data.ctx.locations_info[location_id].player == recomp_data.ctx.slot:\n"
+        "   recomp_data.ctx.received_item_ids.append(recomp_data.ctx.locations_info[location_id].item)\n"
     );
     REPY_FN_CLEANUP;
 }
