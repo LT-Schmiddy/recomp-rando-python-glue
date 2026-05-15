@@ -34,6 +34,10 @@ def get_ap_connect():
 
 # SAVES
 
+def set_additional_data(key, data): # if games need to save additional data (per slot for now)
+    ctx = recomp_data.ctx
+    ctx.additional_data[key] = data
+
 def save_current_state(slot = 0):
     ctx = recomp_data.ctx
     data_path = Path(recomp_data.mod_data_path).joinpath("save_data")
@@ -44,13 +48,15 @@ def save_current_state(slot = 0):
     while len(ctx.save_data) <= slot:
         blank_save_data = {
             "checked_locations": set(),
-            "received_items": []
+            "received_items": [],
+            "additional_data": dict()
         }
         ctx.save_data.append(blank_save_data)
 
     ctx.save_data[slot] = {
         "checked_locations": ctx.local_checked,
-        "received_items": [item._asdict() for item in ctx.local_received]
+        "received_items": [item._asdict() for item in ctx.local_received],
+        "additional_data": ctx.additional_data
     }
 
     with open(data_path.joinpath(file_name), "w") as f:
@@ -64,9 +70,11 @@ async def load_saved_state_from_slot(slot = 0):
         checked_locations = set(saved_data["checked_locations"])
         received_items = [NetworkItem(item["item"], item["location"], item["player"], item["flags"])
                           for item in saved_data["received_items"]]
+        additional_data = saved_data["additional_data"]
 
         ctx.local_checked |= checked_locations
         ctx.local_received = received_items
+        ctx.additional_data = additional_data
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(ctx.locations_checked)}]) # send locations checked offline
     except Exception as e:
         print("failed", e)

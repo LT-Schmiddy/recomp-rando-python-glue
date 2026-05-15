@@ -23,6 +23,7 @@ class RecompContext(CommonContext):
 
         self.received_item_ids: List[int] = [] # mirrors items_received, but is only the item ids
         self.save_data = []
+        self.additional_data = dict() # added as an element to save_data if more data should be saved (per slot for now)
 
         self.connection_success = False
         self.connection_failed = False
