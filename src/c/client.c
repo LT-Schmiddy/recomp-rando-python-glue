@@ -213,6 +213,17 @@ RECOMP_EXPORT void rando_get_sending_player_name(u32 items_index, char** out_str
     REPY_FN_CLEANUP;
 }
 
+RECOMP_EXPORT void rando_get_player_name(u32 player_slot, char** out_str) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_S32("player_slot", player_slot);
+    REPY_FN_EXEC_CACHE(
+        py_rando_get_sending_player_name,
+        "player_name = recomp_data.ctx.player_names[player_slot]" // should there be out of bounds error handling here?
+    );
+    (*out_str) = REPY_FN_GET_STR("player_name");
+    REPY_FN_CLEANUP;
+}
+
 // blank string helper function
 void rando_set_blank_str(char** out_str) {
     // Allocating a buffer for the string on the heap.

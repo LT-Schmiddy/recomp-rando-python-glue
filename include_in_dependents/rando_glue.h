@@ -44,6 +44,8 @@ u32 rando_get_item(u32 items_i);
 s32 rando_get_item_location(u32 items_i);
 u32 rando_get_sending_player(u32 items_i);
 
+void rando_get_player_name(u32 player_slot, char** out_str);
+
 void rando_get_item_name_from_id(u32 item_id, char** out_str);
 void rando_get_sending_player_name(u32 items_i, char** out_str);
 void rando_get_location_item_player(u32 location_id, char** out_str);
