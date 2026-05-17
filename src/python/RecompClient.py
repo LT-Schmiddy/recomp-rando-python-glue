@@ -32,6 +32,7 @@ class RecompContext(CommonContext):
         self.slot_data = dict()
         self.deathlink_enabled = False
         self.deathlink_pending = False
+        self.deathlink_cause: str | None
         self.recomp_needs_updating = False
         self.local_checked = set()
         self.local_received: List[NetworkItem] = []
@@ -56,6 +57,11 @@ class RecompContext(CommonContext):
     
     def on_deathlink(self, data: typing.Dict[str, typing.Any]) -> None:
         self.deathlink_pending = True
+        text = data.get("cause", "")
+        if text:
+            self.deathlink_cause = f"DeathLink: {text}"
+        else:
+            self.deathlink_cause = f"DeathLink: Received from {data['source']}"
         super().on_deathlink(data)
     
     async def complete_goal(self) -> None:

@@ -545,6 +545,16 @@ RECOMP_EXPORT void rando_toggle_death_link(bool toggle) {
     REPY_FN_CLEANUP;
 }
 
+RECOMP_EXPORT void rando_get_death_link_cause(char** out_str) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_EXEC_CACHE(
+        py_rando_get_death_link_cause,
+        "cause = recomp_data.ctx.deathlink_cause"
+    );
+    (*out_str) = REPY_FN_GET_STR("cause");
+    REPY_FN_CLEANUP;
+}
+
 // this should hash the seed name + slot number into a random seed either the randomizer or other mods can use
 RECOMP_EXPORT u32 rando_get_random_seed() {
     REPY_FN_SETUP_RANDO;

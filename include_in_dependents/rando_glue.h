@@ -82,6 +82,7 @@ bool rando_get_death_link_pending();
 void rando_reset_death_link_pending();
 bool rando_get_death_link_enabled();
 void rando_toggle_death_link(bool toggle);
+void rando_get_death_link_cause(char** out_str);
 
 // solo
 void rando_scan_solo_seeds(const unsigned char* save_filename);
