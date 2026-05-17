@@ -51,3 +51,4 @@ def populate_file_injection(injections: dict[Path, Path], inject_root: Path, sea
 
 # Including entire directories            
 populate_file_injection(include_python_files, Path("."), local_src_dir)
+populate_file_injection(include_python_files, Path("./rule_builder"), archipelago_src_dir.joinpath("rule_builder"))
