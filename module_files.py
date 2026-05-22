@@ -4,6 +4,7 @@ from pathlib import Path
 root_dir = Path(__file__).parent
 archipelago_src_dir = root_dir.joinpath("./libs/Archipelago")
 local_src_dir = root_dir.joinpath("./src/python")
+patch_src_dir = root_dir.joinpath("./src/patches") # patched versions of Archipelago files
 
 nrm_archipelago_dir = Path(".")
 
@@ -19,18 +20,15 @@ include_python_files: dict[Path, Path] = {
     nrm_archipelago_dir.joinpath("MultiServer.py"): archipelago_src_dir.joinpath("./MultiServer.py"),
     nrm_archipelago_dir.joinpath("NetUtils.py"): archipelago_src_dir.joinpath("./NetUtils.py"),
     nrm_archipelago_dir.joinpath("Options.py"): archipelago_src_dir.joinpath("./Options.py"),
-    nrm_archipelago_dir.joinpath("Utils.py"): archipelago_src_dir.joinpath("./Utils.py"),
-    # nrm_archipelago_dir.joinpath("settings.py"): archipelago_src_dir.joinpath("./settings.py"),
+    # nrm_archipelago_dir.joinpath("Utils.py"): archipelago_src_dir.joinpath("./Utils.py"), # change all directories to be in `mod_data`
+    # nrm_archipelago_dir.joinpath("settings.py"): archipelago_src_dir.joinpath("./settings.py"), # patched due to __annotations__ related errors
     nrm_archipelago_dir.joinpath("entrance_rando.py"): archipelago_src_dir.joinpath("./entrance_rando.py"),
-    # Path("CustomGenerate.py"): root_dir.joinpath("./src/python/CustomGenerate.py"), # a custom `Generate.py` for custom json output
 
     # Archipelago Client Files
     nrm_archipelago_dir.joinpath("CommonClient.py"): archipelago_src_dir.joinpath("./CommonClient.py"),
-    # Path("RecompClient.py"): local_src_dir.joinpath("./RecompClient.py"), # a custom `Client` that will be the main interface to Archipelago
 
     # Archipelago World Files
     nrm_archipelago_dir.joinpath("worlds/__init__.py"): archipelago_src_dir.joinpath("./worlds/__init__.py"),
-    # Path("worlds/__init__.py"): root_dir.joinpath("./src/python/worlds_init.py"), # a custom `__init__.py` meant to add loading zip archives
     nrm_archipelago_dir.joinpath("worlds/AutoSNIClient.py"): archipelago_src_dir.joinpath("./worlds/AutoSNIClient.py"),
     nrm_archipelago_dir.joinpath("worlds/AutoWorld.py"): archipelago_src_dir.joinpath("./worlds/AutoWorld.py"),
     nrm_archipelago_dir.joinpath("worlds/Files.py"): archipelago_src_dir.joinpath("./worlds/Files.py"),
@@ -40,7 +38,7 @@ include_python_files: dict[Path, Path] = {
     nrm_archipelago_dir.joinpath("worlds/alttp/EntranceRandomizer.py"): archipelago_src_dir.joinpath("./worlds/alttp/EntranceRandomizer.py"),
     nrm_archipelago_dir.joinpath("worlds/alttp/Text.py"): archipelago_src_dir.joinpath("./worlds/alttp/Text.py"),
     nrm_archipelago_dir.joinpath("worlds/alttp/__init__.py"): archipelago_src_dir.joinpath("./worlds/alttp/__init__.py"),
-    # Path("worlds/__init__.py"): root_dir.joinpath("./src/python/worlds_init.py"), # dummy `__init__.py`
+    # Path("worlds/__init__.py"): root_dir.joinpath("./src/python/worlds_init.py"), # changes local folder location
 }
 
 def populate_file_injection(injections: dict[Path, Path], inject_root: Path, search_dir: Path):
@@ -52,5 +50,6 @@ def populate_file_injection(injections: dict[Path, Path], inject_root: Path, sea
 
 # Including entire directories            
 populate_file_injection(include_python_files, Path("."), local_src_dir)
+populate_file_injection(include_python_files, Path("."), patch_src_dir)
 populate_file_injection(include_python_files, Path("./rule_builder"), archipelago_src_dir.joinpath("rule_builder"))
 populate_file_injection(include_python_files, Path("./worlds"), root_dir.parent.joinpath("apworld"))
