@@ -20,7 +20,8 @@ include_python_files: dict[Path, Path] = {
     nrm_archipelago_dir.joinpath("NetUtils.py"): archipelago_src_dir.joinpath("./NetUtils.py"),
     nrm_archipelago_dir.joinpath("Options.py"): archipelago_src_dir.joinpath("./Options.py"),
     nrm_archipelago_dir.joinpath("Utils.py"): archipelago_src_dir.joinpath("./Utils.py"),
-    nrm_archipelago_dir.joinpath("settings.py"): archipelago_src_dir.joinpath("./settings.py"),
+    # nrm_archipelago_dir.joinpath("settings.py"): archipelago_src_dir.joinpath("./settings.py"),
+    nrm_archipelago_dir.joinpath("entrance_rando.py"): archipelago_src_dir.joinpath("./entrance_rando.py"),
     # Path("CustomGenerate.py"): root_dir.joinpath("./src/python/CustomGenerate.py"), # a custom `Generate.py` for custom json output
 
     # Archipelago Client Files
@@ -52,3 +53,4 @@ def populate_file_injection(injections: dict[Path, Path], inject_root: Path, sea
 # Including entire directories            
 populate_file_injection(include_python_files, Path("."), local_src_dir)
 populate_file_injection(include_python_files, Path("./rule_builder"), archipelago_src_dir.joinpath("rule_builder"))
+populate_file_injection(include_python_files, Path("./worlds"), root_dir.parent.joinpath("apworld"))
