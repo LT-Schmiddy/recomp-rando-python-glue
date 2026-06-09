@@ -32,6 +32,7 @@ u32 rando_get_location_type(u32 location_id);
 u32 rando_get_location_has_local_item(u32 location_id);
 u32 rando_get_item_at_location(u32 location_id);
 void rando_broadcast_location_hint(u32 location_id);
+void rando_broadcast_location_hint_player(u32 location_id, u32 player); // for sending hints about other players
 void rando_send_location(u32 location_id);
 
 void rando_complete_goal();

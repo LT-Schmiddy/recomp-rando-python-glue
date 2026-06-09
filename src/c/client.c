@@ -401,11 +401,26 @@ RECOMP_EXPORT void rando_send_queued_scouts(int hint) {
 RECOMP_EXPORT void rando_broadcast_location_hint(u32 location_id) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_U32("location", location_id);
+    REPY_FN_SET_U32("player", rando_get_own_slot_id());
     REPY_FN_EXEC_CACHE(
         py_rando_broadcast_location_hint,
-        "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"LocationScouts\",\n"
+        "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"CreateHints\",\n"
         "                                       \"locations\": [location],\n"
-        "                                       \"create_as_hint\": True}])\n"
+        "                                       \"player\": player}])\n"
+        "RecompClient.run_async_task_once(msg_func)\n"
+    );
+    REPY_FN_CLEANUP;
+}
+
+RECOMP_EXPORT void rando_broadcast_location_hint_player(u32 location_id, u32 player) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_U32("location", location_id);
+    REPY_FN_SET_U32("player", player);
+    REPY_FN_EXEC_CACHE(
+        py_rando_broadcast_location_hint_player,
+        "msg_func = recomp_data.ctx.send_msgs([{\"cmd\": \"CreateHints\",\n"
+        "                                       \"locations\": [location],\n"
+        "                                       \"player\": player}])\n"
         "RecompClient.run_async_task_once(msg_func)\n"
     );
     REPY_FN_CLEANUP;
