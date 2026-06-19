@@ -1,4 +1,5 @@
 # Direct copy of settings.py from Archipelago, but changes self.__annotations__ to self.__class__.__annotations__ for Python 3.14
+# Also changes defautl plando_options to include "item" plando
 
 """
 Application settings / host.yaml interface using type hints.
@@ -696,7 +697,8 @@ class GeneratorOptions(Group):
     meta_file_path: MetaFilePath = MetaFilePath("meta.yaml")
     spoiler: Spoiler = Spoiler(3)
     race: Race = Race(0)
-    plando_options: PlandoOptions = PlandoOptions("bosses, connections, texts")
+    # plando_options: PlandoOptions = PlandoOptions("bosses, connections, texts")
+    plando_options: PlandoOptions = PlandoOptions("bosses, items, connections, texts")
     panic_method: PanicMethod = PanicMethod("swap")
     loglevel: str = "info"
     logtime: bool = False

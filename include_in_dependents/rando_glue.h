@@ -86,6 +86,13 @@ void rando_toggle_death_link(bool toggle);
 void rando_get_death_link_cause(char** out_str);
 
 // solo
+
+// initialize all needed features for solo randomization to work
+// "apworld_folder" is the name of the folder encompassing the apworld
+// used to properly import the apworld from the "worlds" folder for archipelago
+// for example, for Majora's Mask Recompiled this is just "mm_recomp" rather than "apworld\mm_recomp"
+void RandoGlue_InitSolo(char* apworld_folder);
+
 void rando_scan_solo_seeds(const unsigned char* save_filename);
 u32 rando_solo_count();
 u32 rando_solo_get_seed_name(u32 seed_index, char* out, u32 max_length); // Returns the actual string length

@@ -13,13 +13,17 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     REPY_FN_SETUP_INTERP(rando_interp);
 
     // create a `recomp_data` module to store variables that can be used in other python code
+    // probably move this to an actual file to make it easier to manage?
     REPY_ConstructModuleFromCStr(
         "recomp_data",
         "ctx = None\n"
+        "game_name = None\n"
         "mod_data_path = None\n"
         "queued_scouts = set()\n"
         "queued_locations = set()\n" // unsure if this will actually get used
-        "last_location_sent = 0\n",
+        "last_location_sent = 0\n"
+        "options = dict()\n"
+        , // on a different line because i got annoyed
         true
     );
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
@@ -28,6 +32,8 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     REPY_FN_SET_STR("mods_folder", (char*) recomp_get_mod_folder_path());
     REPY_FN_SET_STR("recomp_mod_id", mod_id);
     REPY_FN_SET_STR("ap_game_str", ap_game_name);
+
+    REPY_SetAttrCStr(data_module, "game_name", REPY_MakeSUH(REPY_DictGetCStr(REPY_FN_LOCAL_SCOPE, "ap_game_str")));
 
     REPY_FN_EXEC_CACHE( // maybe move this to a separate python file?
         rando_setup_filepath,
@@ -47,17 +53,6 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
         "Utils.init_logging('RecompClient', exception_logger='Client')\n" // add condition for this to only appear for debugging?
         "RecompClient.run_async_task_once(RecompClient.setup_ctx(ap_game_str))\n"
     );
-
-    // REPY_FN_EXEC_CACHE(
-    //     rando_connect,
-    //     "import RecompClient\n"
-    //     "import recomp_data\n"
-    //     "ctx = recomp_data.ctx\n"
-    //     "ctx.server_address = 'archipelago://' + 'localhost:38281'\n"
-    //     "ctx.auth = 'Hyped'\n"
-    //     "ctx.password = ''\n"
-    //     "RecompClient.connect_client()\n"
-    // );
 
     rando_location_item_map = recomputil_create_u32_value_hashmap();
     rando_location_player_map = recomputil_create_u32_value_hashmap();
