@@ -14,7 +14,7 @@ import json
 
 from pathlib import Path
 
-from RecompSoloServer import start_server
+from RecompSoloServer import start_server, is_port_in_use
 
 import recomp_data
 
@@ -57,12 +57,30 @@ def populate_options():
     # with recomp_data.mod_data_path.joinpath("output.json").open('w') as f:
     #     f.write(json.dumps(recomp_data.options, indent=4))
 
-# generate() and solo() are temporary WIP as things are being worked out
+# temporary WIP as things are being worked out
 def generate():
     # grabs yaml from mod_data/<mod_id>/Archipelago/local/Players
     # needs a yaml to manually be placed there for now as solo menu doesn't do so yet
     erargs, seed = generate_main()
     multiworld = ERMain(erargs, seed)
 
-def host():
-    start_server()
+BASE_SERVER_PORT = 38281
+SERVER_PORT_RANGE = 5
+
+def host(multidata = ""):
+    # find open port in range to start the solo server on
+    # TODO: add possible overrides?
+    server_port = 0
+    for port_attempt in range(SERVER_PORT_RANGE): # range of 5 above deafult server port (any more is absurd)
+        port = BASE_SERVER_PORT + port_attempt
+        # print(f"checking if {port} is available: {is_port_in_use(port)}")
+        if not is_port_in_use(port):
+            server_port = port
+            break
+    
+    if not server_port:
+        print(f"No open port found in range [{BASE_SERVER_PORT} - {BASE_SERVER_PORT + SERVER_PORT_RANGE}].")
+        recomp_data.error_msg = f"No open port found in range [{BASE_SERVER_PORT} - {BASE_SERVER_PORT + SERVER_PORT_RANGE}]."
+        return False
+
+    return start_server(multidata, server_port)

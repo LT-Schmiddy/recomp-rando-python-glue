@@ -93,11 +93,11 @@ void rando_get_death_link_cause(char** out_str);
 // for example, for Majora's Mask Recompiled this is just "mm_recomp" rather than "apworld\mm_recomp"
 void RandoGlue_InitSolo(char* apworld_folder);
 
-void rando_scan_solo_seeds(const unsigned char* save_filename);
+void rando_scan_solo_seeds();
 u32 rando_solo_count();
-u32 rando_solo_get_seed_name(u32 seed_index, char* out, u32 max_length); // Returns the actual string length
-u32 rando_solo_get_generation_date(u32 seed_index, char* out, u32 max_length); // Returns the actual string length
-u32 rando_init_solo(u32 seed_index);
+void rando_solo_get_seed_name(u32 seed_index, char** out_str);
+void rando_solo_get_generation_date(u32 seed_index, char** out_str);
+u32 rando_init_solo(u32 seed_index, char** error_msg);
 
 void rando_yaml_init();
 void rando_yaml_puts(const char* text, u32 size);

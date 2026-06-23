@@ -12,20 +12,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
     // REPY_SetInterpreterAutoDisarm(rando_interp, true); // A hack fix until we have a proper shutdown event.    
     REPY_FN_SETUP_INTERP(rando_interp);
 
-    // create a `recomp_data` module to store variables that can be used in other python code
-    // probably move this to an actual file to make it easier to manage?
-    REPY_ConstructModuleFromCStr(
-        "recomp_data",
-        "ctx = None\n"
-        "game_name = None\n"
-        "mod_data_path = None\n"
-        "queued_scouts = set()\n"
-        "queued_locations = set()\n" // unsure if this will actually get used
-        "last_location_sent = 0\n"
-        "options = dict()\n"
-        , // on a different line because i got annoyed
-        true
-    );
+    // setup the `recomp_data` module to store data to use later
     REPY_Handle data_module = REPY_ImportModule("recomp_data");
     
     // setup the `mod_data` path variable
