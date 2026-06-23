@@ -14,7 +14,7 @@ import recomp_data
 from rando_async_controller import AsyncLoopThread
 
 async_thread = AsyncLoopThread()
-async_thread.start();
+async_thread.start()
 
 class RecompContext(CommonContext):
     def __init__(self, server_address, password):
