@@ -99,7 +99,4 @@ void rando_solo_get_seed_name(u32 seed_index, char** out_str);
 void rando_solo_get_generation_date(u32 seed_index, char** out_str);
 u32 rando_init_solo(u32 seed_index, char** error_msg);
 
-void rando_yaml_init();
-void rando_yaml_puts(const char* text, u32 size);
-void rando_yaml_finalize(const unsigned char* save_path);
 bool rando_solo_generate();

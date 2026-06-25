@@ -22,6 +22,11 @@ void RandoGlue_InitSolo(char* apworld_folder) {
         "rando_solo.populate_options()\n" // populate options for the solo menu
     );
 
+    REPY_FN_EXEC_CACHE(
+        py_rando_setup_solo_yamls, // create "solo_yamls" folder in mod_data if it doesn't already exist
+        "recomp_data.mod_data_path.joinpath('solo_yamls').mkdir(parents=True, exist_ok=True)"
+    );
+
     // just for testing, immediately generates and hosts a seed on initialization
     // REPY_FN_EXEC_CACHE(
     //     rando_test_gen,
@@ -84,7 +89,7 @@ void rando_solo_get_generation_date(u32 seed_index, char** out_str) {
         py_rando_solo_get_generation_date,
         "from datetime import datetime\n"
         "creation_date = datetime.fromtimestamp(recomp_data.solo_seeds[seed_index].stat().st_birthtime)\n"
-        "date = creation_date.strftime('%b %d %Y %H:%M %p')\n"
+        "date = creation_date.strftime('%b %d %Y %I:%M %p')\n"
     );
     
     (*out_str) = REPY_FN_GET_STR("date");
@@ -140,9 +145,16 @@ u32 rando_init_solo(u32 seed_index, char** error_msg) {
     return success;
 }
 
-// temporarily all empty until solo is properly figured out and handled
+bool rando_solo_generate() {
+    REPY_FN_SETUP_RANDO;
 
-void rando_yaml_init() {}
-void rando_yaml_puts(const char* text, u32 size) {}
-void rando_yaml_finalize(const unsigned char* save_path) {}
-bool rando_solo_generate() {return 0;}
+    REPY_FN_IMPORT("rando_solo");
+    REPY_FN_EVAL_CACHE_BOOL(
+        py_rando_generate,
+        "rando_solo.generate()",
+        success
+    );
+
+    REPY_FN_CLEANUP;
+    return success;
+}

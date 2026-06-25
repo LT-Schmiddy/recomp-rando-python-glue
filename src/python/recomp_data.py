@@ -10,6 +10,11 @@ error_msg = "" # TODO: move error messages out of ctx into here
 
 # solo
 server_ctx = None
-options = dict()
 solo_seeds = list() # stores a list of all seed files in the output directory
+solo_yamls = list() # stores a list of all yamls in the "solo_yamls" directory
+options = dict()
+solo_yaml_options = dict() # could probably be done better
+last_generated_yaml_location = None
+# item_names = set()
+# location_names = set()
 is_solo = False

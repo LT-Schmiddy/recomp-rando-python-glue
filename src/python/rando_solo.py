@@ -11,6 +11,7 @@ worlds.network_data_package = DataPackage = {
 }
 
 import json
+import yaml
 
 from pathlib import Path
 
@@ -52,17 +53,32 @@ def populate_options():
             if issubclass(option_class, NumericOption): # toggle/other
                 cur_option["default"] = option_class.default
 
+    # recomp_data.item_names = world.item_names
+    # recomp_data.location_names = world.location_names
+
     # debug
     # print(json.dumps(recomp_data.options, indent=4))
     # with recomp_data.mod_data_path.joinpath("output.json").open('w') as f:
     #     f.write(json.dumps(recomp_data.options, indent=4))
 
-# temporary WIP as things are being worked out
+def populate_yaml_header(output_file):
+    yaml.dump({"name": "Player"}, output_file) # defaulting solo generated yamls to "Player"
+    yaml.dump({"game": recomp_data.game_name}, output_file)
+    yaml.dump({"requires": {"version": "0.6.7"}}, output_file) # expected archipelago version(?)
+
+def clear_players_folder():
+    for yaml_file in recomp_data.mod_data_path.joinpath('Archipelago', 'local', 'Players').glob("*.yaml"):
+        yaml_file.unlink(missing_ok=True)
+
 def generate():
     # grabs yaml from mod_data/<mod_id>/Archipelago/local/Players
-    # needs a yaml to manually be placed there for now as solo menu doesn't do so yet
-    erargs, seed = generate_main()
-    multiworld = ERMain(erargs, seed)
+    try:
+        erargs, seed = generate_main()
+        multiworld = ERMain(erargs, seed)
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 BASE_SERVER_PORT = 38281
 SERVER_PORT_RANGE = 5
