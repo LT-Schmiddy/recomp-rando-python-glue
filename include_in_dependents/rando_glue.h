@@ -97,6 +97,9 @@ void rando_scan_solo_seeds();
 u32 rando_solo_count();
 void rando_solo_get_seed_name(u32 seed_index, char** out_str);
 void rando_solo_get_generation_date(u32 seed_index, char** out_str);
+void rando_solo_scan_yamls();
+u32 rando_solo_yaml_count();
+void rando_solo_yaml_get_name(u32 index, char** out_str);
 u32 rando_init_solo(u32 seed_index, char** error_msg);
 
 bool rando_solo_generate();

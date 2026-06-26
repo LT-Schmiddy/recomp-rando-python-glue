@@ -32,6 +32,7 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name) {
 
     // REPY_SetAttrCStr(data_module, "mod_data_path", REPY_MakeSUH(REPY_FN_GET("mod_data_path")));
     REPY_SetAttrCStr(data_module, "mod_data_path", REPY_MakeSUH(REPY_DictGetCStr(REPY_FN_LOCAL_SCOPE, "mod_data_path")));
+    REPY_SetAttrCStr(data_module, "recomp_mod_id", REPY_MakeSUH(REPY_DictGetCStr(REPY_FN_LOCAL_SCOPE, "recomp_mod_id")));
 
     REPY_FN_EXEC_CACHE(
         rando_setup,

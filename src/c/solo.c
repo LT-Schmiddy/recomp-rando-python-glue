@@ -97,6 +97,50 @@ void rando_solo_get_generation_date(u32 seed_index, char** out_str) {
     REPY_FN_CLEANUP;
 }
 
+void rando_solo_scan_yamls() {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_EXEC_CACHE(
+        py_rando_populate_solo_yaml_list,
+        // this is dumb (but again)
+        "def get_modified_time(file):\n"
+        "   return file.stat().st_mtime\n"
+        "input_folder = recomp_data.mod_data_path.joinpath('solo_yamls')\n"
+        "recomp_data.solo_yamls = sorted(list(input_folder.glob('*.yaml')), key=get_modified_time, reverse=True)\n"
+    );
+
+    REPY_FN_CLEANUP;
+}
+
+u32 rando_solo_yaml_count() {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_EVAL_CACHE_U32(
+        py_rando_get_solo_yaml_count,
+        "len(recomp_data.solo_yamls)",
+        yaml_count
+    );
+
+    REPY_FN_CLEANUP;
+    return yaml_count;
+}
+
+void rando_solo_yaml_get_name(u32 index, char** out_str) {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_SET_U32("index", index);
+
+    REPY_FN_EVAL_CACHE_STR(
+        py_rando_get_solo_yaml_name,
+        "list(recomp_data.solo_yamls)[index].name",
+        yaml_name
+    );
+
+    (*out_str) = yaml_name;
+
+    REPY_FN_CLEANUP;
+}
+
 u32 rando_init_solo(u32 seed_index, char** error_msg) {
     REPY_FN_SETUP_RANDO;
 

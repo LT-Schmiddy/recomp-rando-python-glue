@@ -53,8 +53,8 @@ def populate_options():
             if issubclass(option_class, NumericOption): # toggle/other
                 cur_option["default"] = option_class.default
 
-    # recomp_data.item_names = world.item_names
-    # recomp_data.location_names = world.location_names
+    recomp_data.item_names = sorted(world.item_names)
+    recomp_data.location_names = sorted(world.location_names)
 
     # debug
     # print(json.dumps(recomp_data.options, indent=4))
