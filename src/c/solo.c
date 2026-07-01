@@ -88,7 +88,7 @@ void rando_solo_get_generation_date(u32 seed_index, char** out_str) {
     REPY_FN_EXEC_CACHE(
         py_rando_solo_get_generation_date,
         "from datetime import datetime\n"
-        "creation_date = datetime.fromtimestamp(recomp_data.solo_seeds[seed_index].stat().st_birthtime)\n"
+        "creation_date = datetime.fromtimestamp(recomp_data.solo_seeds[seed_index].stat().st_mtime)\n"
         "date = creation_date.strftime('%b %d %Y %I:%M %p')\n"
     );
     
