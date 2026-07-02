@@ -7,6 +7,7 @@ from pathlib import Path
 import Utils
 import websockets
 import functools
+from collections import Counter
 from NetUtils import decode, encode, JSONtoTextParser, JSONMessagePart, NetworkItem, NetworkPlayer, ClientStatus
 from CommonClient import CommonContext, server_loop
 
@@ -95,10 +96,12 @@ class RecompContext(CommonContext):
                 self.recomp_needs_updating = True
                 self.local_checked |= self.checked_locations
         elif cmd == 'ReceivedItems':
-            # probably dumb to reset the list every time
-            self.received_item_ids = []
-            for item in self.items_received:
-                self.received_item_ids.append(item.item)
+            # due to local items being added to received_item_ids immediately upon collecting
+            # we only want to add actual new items to that list to prevent dupes/items not being counted
+            # because of delays/desyncs between what we actually want to have
+            new_received_item_ids = [item.item for item in self.items_received]
+            new_item_ids = list((Counter(new_received_item_ids) - Counter(self.received_item_ids)).elements())
+            self.received_item_ids += new_item_ids
 
 # client context should be set up before this is called
 async def async_main():
