@@ -49,10 +49,12 @@ def populate_options():
                 # ignore all aliased options and only include actual options
                 # cur_option["choices"] = option_class.options
                 choices = {}
-                for option in dir(option_class):
-                    if (option.startswith("option_")):
-                        name = option.removeprefix("option_")
-                        choices[name] = option_class.options[name]
+                # get all actual choices in the option
+                options = [option.removeprefix("option_") for option in dir(option_class) if option.startswith("option_")]
+                # iterate through the option's choices so the choice order is maintained
+                for option in option_class.options:
+                    if option in options:
+                        choices[option] = option_class.options[option]
                 cur_option["choices"] = choices
             if issubclass(option_class, Range):
                 cur_option["range_start"] = option_class.range_start
