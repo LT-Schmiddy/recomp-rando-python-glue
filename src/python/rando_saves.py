@@ -3,6 +3,7 @@ import time
 import typing
 import json
 from pathlib import Path
+from copy import deepcopy
 
 import Utils
 import websockets
@@ -34,33 +35,41 @@ def get_ap_connect():
 
 # SAVES
 
+def additional_data_exists(key):
+    return key in recomp_data.ctx.additional_data
+
 def set_additional_data(key, data): # if games need to save additional data (per slot for now)
     ctx = recomp_data.ctx
     ctx.additional_data[key] = data
+
+def get_additional_data(key):
+    return recomp_data.ctx.additional_data[key]
 
 def save_current_state(slot = 0):
     ctx = recomp_data.ctx
     data_path = Path(recomp_data.mod_data_path).joinpath("save_data")
     data_path.mkdir(parents=True, exist_ok=True)
     file_name = f"multi_{ctx.seed_name}_{ctx.player_names[ctx.slot]}.json" # TODO: account for solo
-    
+    save_data = deepcopy(ctx.save_data) # dumb python referencing bs
+
     # fill blank slots with dummy data
-    while len(ctx.save_data) <= slot:
+    while len(save_data) <= slot:
         blank_save_data = {
             "checked_locations": set(),
             "received_items": [],
             "additional_data": dict()
         }
-        ctx.save_data.append(blank_save_data)
+        save_data.append(blank_save_data)
 
-    ctx.save_data[slot] = {
-        "checked_locations": ctx.local_checked,
+    save_data[slot] = {
+        "checked_locations": deepcopy(ctx.local_checked),
         "received_items": [item._asdict() for item in ctx.local_received],
-        "additional_data": ctx.additional_data
+        "additional_data": deepcopy(ctx.additional_data)
     }
 
     with open(data_path.joinpath(file_name), "w") as f:
-        f.write(json.dumps(ctx.save_data, default=list, indent=4)) # dumb thing but i don't like how lists look in json lol
+        f.write(json.dumps(save_data, default=list, indent=4)) # dumb thing but i don't like how lists look in json lol
+    ctx.save_data = save_data
 
 async def load_saved_state_from_slot(slot = 0):
     try:

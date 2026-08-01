@@ -586,6 +586,34 @@ RECOMP_EXPORT u32 rando_get_random_seed() {
     return seed;
 }
 
+// SAVE INFO
+
+RECOMP_EXPORT void rando_set_save_data_u32(char* key, u32 data) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_STR("key", key);
+    REPY_FN_SET_U32("data", data);
+    REPY_FN_EXEC_CACHE(
+        py_rando_set_save_data_u32,
+        "rando_saves.set_additional_data(key, data)\n"
+    );
+    REPY_FN_CLEANUP;
+}
+
+RECOMP_EXPORT u32 rando_get_save_data_u32(char* key) {
+    REPY_FN_SETUP_RANDO;
+    REPY_FN_SET_STR("key", key);
+    u32 data = 0; // default to 0 if key doesn't exist
+    REPY_FN_IF_CACHE(py_rando_save_data_u32_key_exists, "rando_saves.additional_data_exists(key)") {
+        REPY_FN_EXEC_CACHE(
+            py_rando_set_save_data_u32,
+            "data = rando_saves.get_additional_data(key)"
+        );
+        data = REPY_FN_GET_U32("data");
+    }
+    REPY_FN_CLEANUP;
+    return data;
+}
+
 // everything below is mm specific slotdata stuff that will need to be altered in the mm repo
 // bool rando_get_game_is_oot(u32 player_id);
 // bool rando_get_game_is_ww(u32 player_id);
