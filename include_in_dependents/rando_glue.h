@@ -22,7 +22,6 @@ void RandoGlue_Init(char* mod_id, char* ap_game_name);
 bool rando_init(char* address, char* player_name, char* password, char** error_msg);
 void rando_populate_locations();
 void rando_update_cache();
-void rando_save_current_state(u8 save_slot);
 
 bool rando_is_connected();
 bool rando_location_is_checked(u32 location_id);
@@ -86,6 +85,8 @@ void rando_toggle_death_link(bool toggle);
 void rando_get_death_link_cause(char** out_str);
 
 // saves
+void rando_load_current_state(u8 save_slot);
+void rando_save_current_state(u8 save_slot);
 void rando_set_save_data_u32(char* key, u32 data);
 u32 rando_get_save_data_u32(char* key); // invalid key defaults to 0
 

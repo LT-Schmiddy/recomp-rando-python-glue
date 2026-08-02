@@ -84,6 +84,8 @@ async def load_saved_state_from_slot(slot = 0):
         ctx.local_checked |= checked_locations
         ctx.local_received = received_items
         ctx.additional_data = additional_data
+
+        ctx.locations_checked |= ctx.local_checked
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(ctx.locations_checked)}]) # send locations checked offline
     except FileNotFoundError:
         pass

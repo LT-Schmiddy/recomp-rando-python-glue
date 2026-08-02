@@ -155,6 +155,20 @@ void rando_update_cache() {
     REPY_FN_CLEANUP;
 }
 
+// should only run when the save file is loaded
+void rando_load_current_state(u8 save_slot) {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_SET_U8("save_slot", save_slot);
+
+    REPY_FN_EXEC_CACHE(
+        py_rando_load_saved_state,
+        "RecompClient.run_async_task_and_wait_once(rando_saves.load_saved_state_from_slot(save_slot))\n" // async due to sending offline locations
+    );
+
+    REPY_FN_CLEANUP;
+}
+
 // should only run when the game is saved
 void rando_save_current_state(u8 save_slot) {
     REPY_FN_SETUP_RANDO;
