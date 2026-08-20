@@ -89,6 +89,8 @@ async def load_saved_state_from_slot(slot = 0):
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(ctx.locations_checked)}]) # send locations checked offline
     except FileNotFoundError:
         pass
+    except IndexError:
+        pass
     except Exception as e:
         print("failed", e.__class__.__name__, e)
         pass
@@ -105,6 +107,8 @@ def load_saved_state():
         ctx.save_data = saved_data
     except FileNotFoundError:
         pass
+    except IndexError:
+            pass
     except Exception as e:
         print("failed", e.__class__.__name__, e)
         pass
