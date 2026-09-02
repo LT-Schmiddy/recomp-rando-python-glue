@@ -430,14 +430,25 @@ RECOMP_EXPORT void rando_broadcast_location_hint_player(u32 location_id, u32 pla
 
 // SLOTDATA
 
+// default slot data output to 0 if the key isn't found
 RECOMP_EXPORT u32 rando_get_slotdata_u32(char* key) {
     REPY_FN_SETUP_RANDO;
     REPY_FN_SET_STR("key", key);
-    REPY_FN_EVAL_CACHE_U32(
+    u32 slotdata_value = 0;
+    
+    REPY_FN_EXEC_CACHE(
         py_rando_get_slotdata_u32,
-        "recomp_data.ctx.slot_data[key]",
-        slotdata_value
+        "value = recomp_data.ctx.slot_data[key]\n"
     );
+
+    if (REPY_IsErrorSet()) {
+        REPY_ClearError();
+        recomp_printf("key \"%s\" not found in slot data\n", key);
+        RandoGlue_ShowErrorContainer(); // show permanent end-user error when invalid key used
+    } else {
+        slotdata_value = REPY_FN_GET_U32("value");
+    }
+
     REPY_FN_CLEANUP;
     return slotdata_value;
 }

@@ -7,5 +7,7 @@
 #define false 0
 #define true 1
 
+void RandoGlue_ShowErrorContainer();
+
 #define DEBUG_GLUE false
 #endif
