@@ -8,6 +8,7 @@ queued_scouts = set()
 queued_locations = set() # unsure if this will actually get used
 last_location_sent = 0
 error_msg = "" # TODO: move error messages out of ctx into here
+game_data = dict() # meant for easy global storage of data
 
 # solo
 server_ctx = None
