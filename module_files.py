@@ -3,8 +3,10 @@ from pathlib import Path
 
 root_dir = Path(__file__).parent
 archipelago_src_dir = root_dir.joinpath("./libs/Archipelago")
+jellyfish_src_dir = root_dir.joinpath("./libs/jellyfish") # required for client/server string matching
 local_src_dir = root_dir.joinpath("./src/python")
 patch_src_dir = root_dir.joinpath("./src/patches") # patched versions of Archipelago files
+
 
 nrm_archipelago_dir = Path(".")
 
@@ -39,8 +41,12 @@ include_python_files: dict[Path, Path] = {
     nrm_archipelago_dir.joinpath("worlds/alttp/Text.py"): archipelago_src_dir.joinpath("./worlds/alttp/Text.py"),
     nrm_archipelago_dir.joinpath("worlds/alttp/__init__.py"): archipelago_src_dir.joinpath("./worlds/alttp/__init__.py"),
     # Path("worlds/__init__.py"): root_dir.joinpath("./src/python/worlds_init.py"), # changes local folder location
+
+    # Jellyfish Package
+    nrm_archipelago_dir.joinpath("jellyfish.py"): jellyfish_src_dir.joinpath("./python/jellyfish/_jellyfish.py"),
 }
 
+# Including entire directories
 def populate_file_injection(injections: dict[Path, Path], inject_root: Path, search_dir: Path):
     for inject_path, file_path in [(inject_root.joinpath(i), search_dir.joinpath(i)) for i in os.listdir(search_dir)]:
         if file_path.is_file() and file_path.suffix == ".py":
@@ -48,7 +54,6 @@ def populate_file_injection(injections: dict[Path, Path], inject_root: Path, sea
         elif file_path.is_dir():
             populate_file_injection(injections, inject_path, file_path)
 
-# Including entire directories            
 populate_file_injection(include_python_files, Path("."), local_src_dir)
 populate_file_injection(include_python_files, Path("."), patch_src_dir)
 populate_file_injection(include_python_files, Path("./rule_builder"), archipelago_src_dir.joinpath("rule_builder"))

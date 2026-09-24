@@ -1,3 +1,6 @@
 [submodule "libs/Archipelago"]
 	path = libs/Archipelago
 	url = https://github.com/ArchipelagoMW/Archipelago
+[submodule "libs/jellyfish"]
+	path = libs/jellyfish
+	url = https://codeberg.org/jpt/jellyfish.git
