@@ -31,7 +31,7 @@ bool rando_location_is_checked(u32 location_id);
 // bool rando_location_is_checked_async(u32 location_id);
 
 u32 rando_get_location_type(u32 location_id);
-u32 rando_get_location_has_local_item(u32 location_id);
+bool rando_get_location_has_local_item(u32 location_id);
 u32 rando_get_item_at_location(u32 location_id);
 void rando_broadcast_location_hint(u32 location_id);
 void rando_broadcast_location_hint_player(u32 location_id, u32 player); // for sending hints about other players
