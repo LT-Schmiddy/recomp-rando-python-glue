@@ -2,7 +2,10 @@
 #include "recompdata.h"
 
 #include "PR/ultratypes.h"
-#define bool    u32
+
+#ifndef bool
+#define bool u32
+#endif
 
 REPY_EXTERN_SUBINTERPRETER(rando_interp);
 

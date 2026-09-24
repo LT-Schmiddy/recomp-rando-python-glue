@@ -26,9 +26,9 @@ RECOMP_EXPORT u32 rando_get_location_type(u32 location_id) { // could technicall
         return 0;
     }
     
-    u32 flags;
+    unsigned long flags;
     recomputil_u32_value_hashmap_get(rando_location_flag_map, location_id, &flags);
-    return flags;
+    return (u32)flags;
 }
 
 RECOMP_EXPORT bool rando_get_location_has_local_item(u32 location_id) {
@@ -50,9 +50,9 @@ RECOMP_EXPORT u32 rando_get_item_at_location(u32 location_id) {
         return 0;
     }
     
-    u32 item_id;
+    unsigned long  item_id;
     recomputil_u32_value_hashmap_get(rando_location_item_map, location_id, &item_id);
-    return item_id;
+    return (u32)item_id;
 }
 
 // this would likely be better as an async function, queueing the locations to send on the update loop
@@ -264,9 +264,9 @@ RECOMP_EXPORT u32 rando_get_location_item_player_id(u32 location_id) {
         return 0;
     }
 
-    u32 player_slot;
+    unsigned long player_slot;
     recomputil_u32_value_hashmap_get(rando_location_player_map, location_id, &player_slot);
-    return player_slot;
+    return (u32)player_slot;
 }
 
 // make this require a max string length
