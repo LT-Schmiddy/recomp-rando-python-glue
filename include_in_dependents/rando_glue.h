@@ -90,6 +90,7 @@ void rando_get_death_link_cause(char** out_str);
 // saves
 void rando_load_current_state(u8 save_slot);
 void rando_save_current_state(u8 save_slot);
+void rando_copy_save_state(u8 src_slot, u8 dst_slot);
 void rando_set_save_data_u32(char* key, u32 data);
 u32 rando_get_save_data_u32(char* key); // invalid key defaults to 0
 

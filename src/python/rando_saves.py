@@ -87,8 +87,6 @@ async def load_saved_state_from_slot(slot = 0):
 
         ctx.locations_checked |= ctx.local_checked
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(ctx.locations_checked)}]) # send locations checked offline
-    except FileNotFoundError:
-        pass
     except IndexError:
         pass
     except Exception as e:
@@ -107,8 +105,35 @@ def load_saved_state():
         ctx.save_data = saved_data
     except FileNotFoundError:
         pass
+    except Exception as e:
+        print("failed", e.__class__.__name__, e)
+        pass
+
+def copy_save_state(src_slot, dst_slot):
+    try:
+        # TODO: general "don't repeat yourself" principal w/ save function from above
+        ctx = recomp_data.ctx
+        data_path = Path(recomp_data.mod_data_path).joinpath("save_data")
+        data_path.mkdir(parents=True, exist_ok=True)
+        file_name = f"multi_{ctx.seed_name}_{ctx.player_names[ctx.slot]}.json" # TODO: account for solo
+        save_data = deepcopy(ctx.save_data) # dumb python referencing bs
+    
+        # fill blank slots with dummy data
+        while len(save_data) <= max(src_slot, dst_slot):
+            blank_save_data = {
+                "checked_locations": set(),
+                "received_items": [],
+                "additional_data": dict()
+            }
+            save_data.append(blank_save_data)
+    
+        save_data[dst_slot] = save_data[src_slot]
+    
+        with open(data_path.joinpath(file_name), "w") as f:
+            f.write(json.dumps(save_data, default=list, indent=4))
+        ctx.save_data = save_data
     except IndexError:
-            pass
+        pass
     except Exception as e:
         print("failed", e.__class__.__name__, e)
         pass

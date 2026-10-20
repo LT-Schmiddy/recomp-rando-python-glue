@@ -186,3 +186,17 @@ void rando_save_current_state(u8 save_slot) {
 
     REPY_FN_CLEANUP;
 }
+
+void rando_copy_save_state(u8 src_slot, u8 dst_slot) {
+    REPY_FN_SETUP_RANDO;
+
+    REPY_FN_SET_U8("src_slot", src_slot);
+    REPY_FN_SET_U8("dst_slot", dst_slot);
+
+    REPY_FN_EXEC_CACHE(
+        py_rando_copy_save_state,
+        "rando_saves.copy_save_state(src_slot, dst_slot)"
+    );
+
+    REPY_FN_CLEANUP;
+}
