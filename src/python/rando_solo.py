@@ -3,7 +3,7 @@ from worlds.AutoWorld import AutoWorldRegister, World
 # from worlds.mm_recomp import MMRWorld # temp, apworld needs to be loaded for auto world discovery
 from Generate import main as generate_main
 from Main import main as ERMain
-from Options import get_option_groups, Choice, Toggle, DefaultOnToggle, Range, OptionList, NumericOption
+from Options import get_option_groups, Choice, Toggle, DefaultOnToggle, Range, OptionList, NumericOption, NamedRange
 
 # apworld needs to be loaded before this module is imported for auto world discovery
 worlds.network_data_package = DataPackage = {
@@ -59,6 +59,8 @@ def populate_options():
             if issubclass(option_class, Range):
                 cur_option["range_start"] = option_class.range_start
                 cur_option["range_end"] = option_class.range_end
+            if issubclass(option_class, NamedRange): # treat NamedRanges like Choices
+                cur_option["choices"] = option_class.special_range_names
             if issubclass(option_class, NumericOption): # toggle/other
                 cur_option["default"] = option_class.default
 
